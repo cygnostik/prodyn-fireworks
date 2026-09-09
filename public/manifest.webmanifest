@@ -1,0 +1,24 @@
+{
+  "name": "AFTERLIGHT",
+  "short_name": "Afterlight",
+  "description": "An original 3D fireworks instrument. Build a sky, layer a finale, and take it offline.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050A0F",
+  "theme_color": "#050A0F",
+  "lang": "en",
+  "categories": ["entertainment", "music"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "./assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "./assets/screenshot-wide.png", "sizes": "1280x720", "type": "image/png", "form_factor": "wide", "label": "The widescreen 3D sky and bottom firework instrument" },
+    { "src": "./assets/screenshot-narrow.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "Touch-friendly effect families and a compact Finale control" }
+  ]
+}

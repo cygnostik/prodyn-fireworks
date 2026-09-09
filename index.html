@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#050A0F" />
+    <meta
+      name="description"
+      content="Paint the night. An open-source 3D fireworks instrument with 40 effects, spatial sound and a stackable grand finale. Install it and take your sky offline."
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="application-name" content="Afterlight" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Afterlight" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Afterlight" />
+    <meta property="og:title" content="AFTERLIGHT — Paint the night" />
+    <meta
+      property="og:description"
+      content="An open-source 3D fireworks instrument. Fire 40 distinct effects, stack your finale, and take the whole show offline."
+    />
+    <meta property="og:image" content="./assets/social.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Golden fireworks and coloured stars above a dark lake. AFTERLIGHT — Paint the night."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AFTERLIGHT — Paint the night" />
+    <meta
+      name="twitter:description"
+      content="Your own fireworks show. An open-source 3D instrument with layered finales and spatial sound."
+    />
+    <meta name="twitter:image" content="./assets/social.jpg" />
+    <!-- DEPLOYMENT_METADATA -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="./assets/icon-192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./assets/apple-touch-icon.png"
+    />
+    <link
+      rel="preload"
+      href="./assets/fonts/Oxanium-wght.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="./assets/fonts/DepartureMono-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>AFTERLIGHT — Paint the night</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Afterlight",
+        "applicationCategory": "EntertainmentApplication",
+        "operatingSystem": "Web",
+        "description": "An open-source 3D fireworks instrument with a layered finale composer, original spatial audio and offline installation.",
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/license/mit",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="masthead">
+        <a class="wordmark" href="./" aria-label="Afterlight home"
+          >AFTER<span>LIGHT</span><i aria-hidden="true">✳</i></a
+        >
+        <p class="masthead-caption">PAINT THE NIGHT</p>
+        <nav class="top-actions" aria-label="Show tools">
+          <button
+            class="tool-button"
+            id="sound-toggle"
+            aria-pressed="false"
+            aria-label="Enable sound"
+          >
+            <span data-icon="sound-off"></span
+            ><span class="tool-label" id="sound-label">SOUND OFF</span>
+          </button>
+          <button
+            class="tool-button"
+            id="pause-toggle"
+            aria-pressed="false"
+            aria-label="Pause the show"
+          >
+            <span data-icon="pause"></span>
+          </button>
+          <button
+            class="tool-button"
+            id="fullscreen-toggle"
+            aria-label="Enter cinema fullscreen"
+          >
+            <span data-icon="fullscreen"></span>
+          </button>
+          <button
+            class="tool-button"
+            id="settings-open"
+            aria-label="Open settings and help"
+          >
+            <span data-icon="menu"></span>
+          </button>
+        </nav>
+      </header>
+
+      <main class="theater" id="theater" aria-label="Fireworks stage">
+        <div class="film" id="film">
+          <img
+            class="fallback-poster"
+            src="./assets/poster.jpg"
+            alt="Fireworks above a moonlit lake"
+            width="1600"
+            height="900"
+          />
+          <canvas
+            id="sky"
+            aria-label="Interactive 3D fireworks stage. Tap or click the sky to fire the selected effect. Use the effect buttons or Space as a keyboard alternative."
+            tabindex="0"
+          ></canvas>
+          <div class="stage-corner stage-corner-tl" aria-hidden="true"></div>
+          <div class="stage-corner stage-corner-tr" aria-hidden="true"></div>
+          <div class="stage-corner stage-corner-bl" aria-hidden="true"></div>
+          <div class="stage-corner stage-corner-br" aria-hidden="true"></div>
+          <div class="sky-title" id="sky-title">
+            <p class="eyebrow">YOUR SKY. YOUR SHOW.</p>
+            <h1>The night is yours.</h1>
+            <p>Tap a firework below. Then paint the sky.</p>
+            <button class="text-button" id="watch-show">
+              Or watch a composed show <span aria-hidden="true">↗</span>
+            </button>
+          </div>
+          <div class="stage-status" id="stage-status" role="status">
+            Preparing the sky…
+          </div>
+          <div class="paused-label" id="paused-label" hidden>
+            HELD IN THE SKY <button id="resume-inline">Resume</button>
+          </div>
+          <div class="canvas-error" id="canvas-error" hidden>
+            <h2>This sky needs WebGL 2.</h2>
+            <p id="error-detail">
+              Try a current browser with hardware acceleration enabled. Your
+              finale is still here.
+            </p>
+            <button id="retry-renderer">Try again</button>
+          </div>
+          <div class="stage-bottom">
+            <span id="fired-name">A quiet place to make some noise.</span
+            ><button
+              id="capture"
+              class="quiet-button"
+              aria-label="Save a picture of the sky"
+            >
+              <span data-icon="camera"></span><span>KEEP THIS SKY</span>
+            </button>
+          </div>
+        </div>
+        <div class="portrait-note">
+          <span class="fine-rule"></span>
+          <p>A whole night,<br /><strong>at your fingertips.</strong></p>
+          <span
+            >Tap to fire. Add + to layer.<br />Turn your phone for a wider
+            sky.</span
+          >
+        </div>
+        <button id="cinema-exit" class="cinema-exit quiet-button">
+          <span data-icon="stack"></span>SHOW CONTROLS
+        </button>
+      </main>
+
+      <section class="deck" aria-label="Fireworks control deck">
+        <div class="deck-topline">
+          <div class="selected-caption">
+            <span class="eyebrow">ON THE PAD</span
+            ><strong id="selected-name">Chrysanthemum</strong
+            ><span id="selected-description"
+              >A full sphere of fine, sparkling radial trails.</span
+            >
+          </div>
+          <button
+            class="finale-handle"
+            id="finale-open"
+            aria-expanded="false"
+            aria-controls="finale-panel"
+          >
+            <span data-icon="stack"></span><span>FINALE</span
+            ><span id="finale-count">0</span
+            ><span class="handle-chevron" aria-hidden="true">⌃</span>
+          </button>
+        </div>
+        <div class="deck-main">
+          <div
+            class="banks"
+            id="banks"
+            role="group"
+            aria-label="Effect families"
+          ></div>
+          <div
+            class="effect-pad"
+            id="effect-pad"
+            role="group"
+            aria-label="Firework effects"
+          ></div>
+          <div class="fire-actions">
+            <button
+              class="fire-button"
+              id="fire-selected"
+              aria-label="Fire selected firework"
+            >
+              <span data-icon="spark"></span><span>FIRE</span
+              ><kbd>SPACE</kbd></button
+            ><button
+              class="add-selected"
+              id="add-selected"
+              aria-label="Add selected firework to finale"
+            >
+              +<span>LAYER</span>
+            </button>
+          </div>
+        </div>
+        <div class="deck-foot">
+          <div class="palette-control">
+            <span class="eyebrow">COLOUR</span>
+            <div
+              class="swatches"
+              id="swatches"
+              role="group"
+              aria-label="Firework colours"
+            ></div>
+            <span id="palette-name">Signature</span>
+          </div>
+          <div class="deck-foot-actions">
+            <button class="quiet-button" id="clear-sky">CLEAR SKY</button
+            ><span class="keyboard-hint"
+              >1—8 FIRE <span>·</span> SHIFT + 1—8 LAYER</span
+            ><span class="save-note" id="save-note">SAVED ON THIS DEVICE</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="finale-panel"
+        id="finale-panel"
+        aria-labelledby="finale-heading"
+        hidden
+      >
+        <div class="sheet-heading">
+          <div>
+            <p class="eyebrow">LAYER THE LAST WORD</p>
+            <h2 id="finale-heading">Your grand finale.</h2>
+          </div>
+          <button
+            id="finale-close"
+            class="tool-button"
+            aria-label="Close finale composer"
+          >
+            <span data-icon="close"></span>
+          </button>
+        </div>
+        <div class="finale-top">
+          <label class="title-input-label"
+            ><span class="sr-only">Show title</span
+            ><input
+              id="show-title"
+              type="text"
+              maxlength="64"
+              value="My night sky"
+              aria-label="Show title"
+          /></label>
+          <div class="duration-control">
+            <label for="duration">BUILD</label
+            ><input
+              id="duration"
+              type="range"
+              min="12"
+              max="45"
+              value="22"
+            /><output id="duration-value" for="duration">22s</output>
+          </div>
+        </div>
+        <p class="composer-explanation">
+          Each tile is a layer. They overlap, spread across the sky, then come
+          together for the finish.
+        </p>
+        <div class="layer-empty" id="layer-empty">
+          <span data-icon="stack"></span>
+          <p>
+            Start with a little gold.<br /><span
+              >Use + on any firework to stack a layer here.</span
+            >
+          </p>
+        </div>
+        <ol class="layer-list" id="layer-list" aria-label="Finale layers"></ol>
+        <div class="cue-ribbon" id="cue-ribbon" aria-hidden="true"></div>
+        <div class="finale-footer">
+          <div class="finale-utility">
+            <button class="quiet-button" id="presets-open">
+              COMPOSED SHOWS</button
+            ><button class="quiet-button" id="export-show">SAVE FILE</button
+            ><button class="quiet-button" id="share-show">SHARE</button
+            ><button class="quiet-button" id="clear-finale">CLEAR</button>
+          </div>
+          <button class="finale-fire" id="finale-fire" disabled>
+            <span data-icon="spark"></span
+            ><span id="finale-fire-label">FIRE FINALE</span>
+          </button>
+        </div>
+        <div class="show-progress" id="show-progress" hidden>
+          <div id="show-progress-fill"></div>
+        </div>
+      </section>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <dialog id="settings" aria-labelledby="settings-title">
+      <div class="dialog-top">
+        <p class="eyebrow">AFTERLIGHT / SETTINGS</p>
+        <button
+          class="tool-button"
+          data-close-dialog
+          aria-label="Close settings"
+        >
+          <span data-icon="close"></span>
+        </button>
+      </div>
+      <h2 id="settings-title">Make yourself at home.</h2>
+      <div class="settings-grid">
+        <label
+          >Volume <output id="volume-value">60%</output
+          ><input id="volume" type="range" min="0" max="100" value="60"
+        /></label>
+        <label
+          >Wind <output id="wind-value">Light breeze</output
+          ><input id="wind" type="range" min="-10" max="10" value="2"
+        /></label>
+        <label
+          >Detail<select id="quality">
+            <option value="auto">Automatic</option>
+            <option value="high">High</option>
+            <option value="medium">Balanced</option>
+            <option value="low">Battery saver</option>
+          </select></label
+        >
+        <label
+          >Viewpoint<select id="view">
+            <option value="audience">At the water</option>
+            <option value="close">Closer to the sky</option>
+            <option value="wide">Wide panorama</option>
+          </select></label
+        >
+        <label class="check-row"
+          ><input id="reflections" type="checkbox" checked /> Water
+          reflections</label
+        >
+        <label class="check-row"
+          ><input id="gentle" type="checkbox" /> Gentle mode
+          <small>Less flash; no automatic opening</small></label
+        >
+      </div>
+      <div class="install-section">
+        <div>
+          <h3>Your sky, offline.</h3>
+          <p id="pwa-status">Preparing offline installation…</p>
+        </div>
+        <button class="primary-button" id="install-app">INSTALL APP</button
+        ><button class="primary-button" id="update-app" hidden>
+          UPDATE APP
+        </button>
+      </div>
+      <div class="help-copy">
+        <h3>A small field guide.</h3>
+        <p>
+          Tap a pictogram to fire it. Tap the sky to choose where your next
+          shell opens. Each <strong>+</strong> adds that effect and colour to
+          the Finale. Set a layer’s density to fill more of the sky.
+        </p>
+        <p>
+          <kbd>1—8</kbd> fire · <kbd>Shift + 1—8</kbd> add a layer ·
+          <kbd>Space</kbd> fire selected · <kbd>P</kbd> pause ·
+          <kbd>F</kbd> finale · <kbd>M</kbd> sound. Touch controls do the same
+          jobs.
+        </p>
+        <p>
+          Sound starts only when you enable it. Distant flashes arrive before
+          their reports. Hide the app and the show pauses; sound stays off when
+          you return.
+        </p>
+        <p>
+          Gentle mode softens bursts and starts still. You can pause or clear
+          the sky at any time.
+        </p>
+      </div>
+      <div class="about-links">
+        <button class="quiet-button" id="import-show">OPEN SHOW FILE</button
+        ><a href="./field-guide.html" target="_blank" rel="noopener"
+          >FIREWORK FIELD GUIDE ↗</a
+        ><a href="./sound-library.html" target="_blank" rel="noopener"
+          >SOUND LIBRARY ↗</a
+        ><a href="./credits.html" target="_blank" rel="noopener"
+          >CREDITS & MIT LICENCE ↗</a
+        >
+      </div>
+      <input
+        id="import-file"
+        type="file"
+        accept="application/json,.json"
+        hidden
+      />
+      <p class="privacy-note">
+        No accounts. No analytics. Your finale stays in this browser unless you
+        share or export it.
+      </p>
+    </dialog>
+    <dialog id="presets" aria-labelledby="presets-title">
+      <div class="dialog-top">
+        <p class="eyebrow">READY TO LIGHT</p>
+        <button
+          class="tool-button"
+          data-close-dialog
+          aria-label="Close composed shows"
+        >
+          <span data-icon="close"></span>
+        </button>
+      </div>
+      <h2 id="presets-title">Let the sky compose itself.</h2>
+      <div id="preset-list"></div>
+    </dialog>
+    <noscript
+      ><section class="no-script">
+        <h1>Afterlight — Paint the night</h1>
+        <p>
+          This interactive 3D fireworks instrument needs JavaScript and WebGL 2.
+          Enable JavaScript to fire the effects and compose a finale.
+        </p>
+        <a href="./field-guide.html">Read the firework field guide</a> ·
+        <a href="./credits.html">Credits and licence</a>
+      </section></noscript
+    >
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,405 @@
+{
+  "title": "Afterlight — original procedural fireworks audio",
+  "synthesisVersion": 1,
+  "license": "MIT",
+  "licenseFile": "../licenses/audio.txt",
+  "origin": "Original deterministic PCM synthesis; no recorded samples or third-party impulse responses.",
+  "format": "RIFF/WAVE, signed 16-bit little-endian PCM, stereo, 48000 Hz",
+  "samples": [
+    {
+      "file": "launch.wav",
+      "signature": "launch",
+      "seed": 1009,
+      "bytes": 288044,
+      "layers": [
+        "transient",
+        "body",
+        "air",
+        "tail"
+      ],
+      "duration": 1.5,
+      "frames": 72000,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.7599999904632568,
+      "rms": 0.06399379962530852,
+      "dc": -0.000003497678745966667,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.17218588832886264,
+      "lateRms": 0.00010817191345816813,
+      "brightness": 0.3575359565317803
+    },
+    {
+      "file": "burst.wav",
+      "signature": "burst",
+      "seed": 1110,
+      "bytes": 729644,
+      "layers": [
+        "transient",
+        "body",
+        "air",
+        "tail"
+      ],
+      "duration": 3.8,
+      "frames": 182400,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.8799999952316284,
+      "rms": 0.05187494924821872,
+      "dc": -0.0000013972848781764757,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.198061112958591,
+      "lateRms": 0.00018457168526608896,
+      "brightness": 0.3935253227093741
+    },
+    {
+      "file": "salute.wav",
+      "signature": "salute",
+      "seed": 1211,
+      "bytes": 806444,
+      "layers": [
+        "transient",
+        "body",
+        "tail"
+      ],
+      "duration": 4.2,
+      "frames": 201600,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.8999999761581421,
+      "rms": 0.031561096215385234,
+      "dc": -0.0000023920921970818284,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.12737907044322255,
+      "lateRms": 0.00007214491317158138,
+      "brightness": 0.5429067264140929
+    },
+    {
+      "file": "crackle.wav",
+      "signature": "crackle",
+      "seed": 1312,
+      "bytes": 537644,
+      "layers": [
+        "crackle",
+        "air",
+        "tail"
+      ],
+      "duration": 2.8,
+      "frames": 134400,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.699999988079071,
+      "rms": 0.05088081370822483,
+      "dc": -3.4758955036641253e-9,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.04721281307153837,
+      "lateRms": 0.022164683157074913,
+      "brightness": 1.072139044116483
+    },
+    {
+      "file": "sizzle.wav",
+      "signature": "sizzle",
+      "seed": 1413,
+      "bytes": 576044,
+      "layers": [
+        "air"
+      ],
+      "duration": 3,
+      "frames": 144000,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.09553983807563782,
+      "rms": 0.015634426892054853,
+      "dc": 3.356510090636536e-10,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.03548276750833247,
+      "lateRms": 0.0022586394626264166,
+      "brightness": 1.4145585189574512
+    },
+    {
+      "file": "whistle.wav",
+      "signature": "whistle",
+      "seed": 1514,
+      "bytes": 460844,
+      "layers": [
+        "whistle",
+        "air",
+        "tail"
+      ],
+      "duration": 2.4,
+      "frames": 115200,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.3174920380115509,
+      "rms": 0.15905235394065806,
+      "dc": -9.842176505644081e-9,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.14372841858020738,
+      "lateRms": 0.1463527613081555,
+      "brightness": 0.2954065612587982
+    },
+    {
+      "file": "fountain.wav",
+      "signature": "fountain",
+      "seed": 1615,
+      "bytes": 691244,
+      "layers": [
+        "air",
+        "crackle"
+      ],
+      "duration": 3.6,
+      "frames": 172800,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.3234442174434662,
+      "rms": 0.09959368432152245,
+      "dc": -1.0624934140442875e-8,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.12268553693121553,
+      "lateRms": 0.08210040032141006,
+      "brightness": 1.3084172258966869
+    },
+    {
+      "file": "comet.wav",
+      "signature": "comet",
+      "seed": 1716,
+      "bytes": 345644,
+      "layers": [
+        "transient",
+        "body",
+        "air",
+        "tail"
+      ],
+      "duration": 1.8,
+      "frames": 86400,
+      "sampleRate": 48000,
+      "channels": 2,
+      "peak": 0.47999998927116394,
+      "rms": 0.02362036571112099,
+      "dc": -0.0000023027506206693773,
+      "nonFinite": 0,
+      "clipped": 0,
+      "earlyRms": 0.06982808053905461,
+      "lateRms": 0.0000540227211697686,
+      "brightness": 0.6039050974145104
+    }
+  ],
+  "demonstration": {
+    "file": "demonstration.wav",
+    "bytes": 4608044,
+    "duration": 24,
+    "frames": 1152000,
+    "sampleRate": 48000,
+    "channels": 2,
+    "peak": 0.35189124941825867,
+    "rms": 0.022433705508707758,
+    "dc": -9.468397231002065e-7,
+    "nonFinite": 0,
+    "clipped": 0,
+    "earlyRms": 0,
+    "lateRms": 0.01123037036962427,
+    "brightness": 0.44473480552089306,
+    "listener": [
+      0,
+      40,
+      300
+    ],
+    "timeline": [
+      {
+        "time": 0.15,
+        "signature": "launch",
+        "position": [
+          -55,
+          0,
+          0
+        ],
+        "gain": 0.85,
+        "arrival": 1.0468273128438497
+      },
+      {
+        "time": 1.7,
+        "signature": "burst",
+        "position": [
+          -55,
+          170,
+          0
+        ],
+        "gain": 1,
+        "arrival": 2.6666163061283035
+      },
+      {
+        "time": 2.16,
+        "signature": "crackle",
+        "position": [
+          -55,
+          170,
+          0
+        ],
+        "gain": 0.68,
+        "arrival": 3.1266163061283034
+      },
+      {
+        "time": 4.2,
+        "signature": "launch",
+        "position": [
+          65,
+          0,
+          0
+        ],
+        "gain": 0.85,
+        "arrival": 5.102496017035808
+      },
+      {
+        "time": 5.8,
+        "signature": "salute",
+        "position": [
+          65,
+          205,
+          0
+        ],
+        "gain": 1.2,
+        "arrival": 6.816025573949074
+      },
+      {
+        "time": 7.8,
+        "signature": "comet",
+        "position": [
+          -100,
+          50,
+          0
+        ],
+        "gain": 0.85,
+        "arrival": 8.722407697933317
+      },
+      {
+        "time": 8.1,
+        "signature": "sizzle",
+        "position": [
+          -70,
+          90,
+          0
+        ],
+        "gain": 0.36,
+        "arrival": 9.009882596753775
+      },
+      {
+        "time": 9.2,
+        "signature": "fountain",
+        "position": [
+          90,
+          0,
+          0
+        ],
+        "gain": 0.75,
+        "arrival": 10.120562880690784
+      },
+      {
+        "time": 12,
+        "signature": "whistle",
+        "position": [
+          -80,
+          85,
+          0
+        ],
+        "gain": 0.48,
+        "arrival": 12.914657693414052
+      },
+      {
+        "time": 14.2,
+        "signature": "launch",
+        "position": [
+          -100,
+          0,
+          0
+        ],
+        "gain": 0.85,
+        "arrival": 15.129293145802286
+      },
+      {
+        "time": 14.4,
+        "signature": "launch",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "gain": 0.85,
+        "arrival": 15.282375857167438
+      },
+      {
+        "time": 14.6,
+        "signature": "launch",
+        "position": [
+          100,
+          0,
+          0
+        ],
+        "gain": 0.85,
+        "arrival": 15.529293145802287
+      },
+      {
+        "time": 15.9,
+        "signature": "burst",
+        "position": [
+          -100,
+          180,
+          0
+        ],
+        "gain": 1,
+        "arrival": 16.90825751987117
+      },
+      {
+        "time": 16.1,
+        "signature": "burst",
+        "position": [
+          0,
+          220,
+          0
+        ],
+        "gain": 1,
+        "arrival": 17.119991585104135
+      },
+      {
+        "time": 16.3,
+        "signature": "burst",
+        "position": [
+          100,
+          180,
+          0
+        ],
+        "gain": 1,
+        "arrival": 17.308257519871173
+      },
+      {
+        "time": 16.8,
+        "signature": "crackle",
+        "position": [
+          80,
+          180,
+          0
+        ],
+        "gain": 0.6,
+        "arrival": 17.79296713503944
+      },
+      {
+        "time": 17.5,
+        "signature": "salute",
+        "position": [
+          0,
+          205,
+          0
+        ],
+        "gain": 1.1,
+        "arrival": 18.498196403251896
+      }
+    ]
+  },
+  "note": "Demonstration uses an authored offline mix, not a recorded browser session. No human listening quality claim."
+}

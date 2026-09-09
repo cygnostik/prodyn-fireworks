@@ -1,0 +1,1394 @@
+{
+  "schema_version": 1,
+  "description": "Original rendering specifications with attributed source references. Animation timings are authored, not measured.",
+  "catalog": [
+    {
+      "id": "peony",
+      "label": "Peony",
+      "group": "blooms",
+      "kind": "aerial-burst",
+      "geometry": "Evenly distributed points on an expanding 3D spherical surface, not a screen-space disk.",
+      "motion_and_fall": "Rapid opening, then deceleration and modest collective sag.",
+      "trail_rendering": "None beyond a very short exposure-like glint; no persistent streaks.",
+      "branching": "None.",
+      "color_behavior": "One saturated color by default; a separate color-change modifier is permitted.",
+      "sound_design": {
+        "signature": "Single rounded aerial report; no automatic crackle, whistle or fizz.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          1.4,
+          2.6
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Kiku/chrysanthemum and botan/peony agree on the trail distinction; a tailless star can still fall.",
+      "source_ids": [
+        1,
+        2,
+        5,
+        13
+      ]
+    },
+    {
+      "id": "chrysanthemum",
+      "label": "Chrysanthemum",
+      "group": "blooms",
+      "kind": "aerial-burst",
+      "geometry": "Spherical array of radial heads, each leaving a visible spoke.",
+      "motion_and_fall": "Fast round opening followed by gently curving descent.",
+      "trail_rendering": "Fine continuous spark trails with separately aging sparks; heads remain identifiable.",
+      "branching": "None; a spark tail is not secondary branching.",
+      "color_behavior": "Warm trail plus optional colored tips; no mandatory crackle ending.",
+      "sound_design": {
+        "signature": "Single rounded aerial report; an unobtrusive airy tail is authored, not a distinct sourced sound.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.2,
+          3.8
+        ],
+        "individual_trail_particle_range": [
+          0.35,
+          0.85
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Persistent trails distinguish chrysanthemum from the largely tailless peony.",
+      "source_ids": [
+        1
+      ]
+    },
+    {
+      "id": "dahlia",
+      "label": "Dahlia",
+      "group": "blooms",
+      "kind": "aerial-burst",
+      "geometry": "Sparse, large, bright tailless points with clear gaps between petals.",
+      "motion_and_fall": "Longer reach and longer readable points than the peony preset.",
+      "trail_rendering": "No persistent trail in the base preset.",
+      "branching": "None.",
+      "color_behavior": "Prominent bright colored heads; optional contrasting independent core.",
+      "sound_design": {
+        "signature": "One aerial report; not intrinsically crackling.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.2,
+          3.8
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Larger/brighter/fewer is relative, not an absolute star count or speed.",
+      "source_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "diadem",
+      "label": "Diadem",
+      "group": "blooms",
+      "kind": "aerial-composite",
+      "geometry": "Outer peony plus a tight inner cluster.",
+      "motion_and_fall": "Outer sphere expands normally; core moves less and fades sooner.",
+      "trail_rendering": "Inherit the outer bloom; compact core stays point-like.",
+      "branching": "No delayed child burst.",
+      "color_behavior": "Contrasting core; avoid compulsory strobe.",
+      "sound_design": {
+        "signature": "One shared aerial report, not one per core.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.0,
+          3.2
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.25
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "An authored compact-core distinction based on HEX; other vendors use diadem much like pistil.",
+      "source_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "pistil",
+      "label": "Pistil",
+      "group": "blooms",
+      "kind": "aerial-composite",
+      "geometry": "Outer flower plus one smaller concentric spherical core.",
+      "motion_and_fall": "Both layers begin together; inner layer has smaller radial reach.",
+      "trail_rendering": "Independent trail choices per layer.",
+      "branching": "No secondary burst; two star layers share one event center.",
+      "color_behavior": "Clear inner/outer contrast; optional synchronized changes.",
+      "sound_design": {
+        "signature": "One aerial report for the whole bloom.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.3,
+          3.8
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.7
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "A core modifier presented as a ready-to-use button, not a unique particle law.",
+      "source_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "double-pistil",
+      "label": "Double pistil · Yaeshin",
+      "group": "blooms",
+      "kind": "aerial-composite",
+      "geometry": "One outer flower plus two inner spherical cores: three visible layers in total.",
+      "motion_and_fall": "Co-centered simultaneous opening with different expansion radii.",
+      "trail_rendering": "Default tailless inner layers keep gaps readable; outer trail optional.",
+      "branching": "No secondary breaks.",
+      "color_behavior": "Three distinguishable layers; changes preserve layer identity.",
+      "sound_design": {
+        "signature": "One aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.6,
+          4.2
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.7
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "An English preset label for two nested inner cores, not an asserted Japanese display classification.",
+      "source_ids": [
+        1,
+        9,
+        13
+      ]
+    },
+    {
+      "id": "multi-pistil",
+      "label": "Multi-pistil",
+      "group": "blooms",
+      "kind": "aerial-composite",
+      "geometry": "Default one outer sphere plus three inner spherical cores; optionally four inner cores.",
+      "motion_and_fall": "Precisely concentric expansion; preserve depth and similar overall extinction timing.",
+      "trail_rendering": "Use restrained tails so successive cores do not merge into solid bloom.",
+      "branching": "No delayed child bursts.",
+      "color_behavior": "Separate layer palettes; optionally stage a synchronized color transition for each layer.",
+      "sound_design": {
+        "signature": "One shared aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          3.0,
+          4.8
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.55
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Three inner cores correspond to sanjushin; not three total spheres and not planar bullseye rings.",
+      "source_ids": [
+        1,
+        9
+      ]
+    },
+    {
+      "id": "willow",
+      "label": "Willow",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "Broad globe opening into a loose umbrella of fine hanging branches.",
+      "motion_and_fall": "Opening yields early to strong downward curvature; long descent remains visible.",
+      "trail_rendering": "Long, thin, relatively dim warm amber/gold sparks.",
+      "branching": "None.",
+      "color_behavior": "Usually warm canopy in this preset; later tips are an optional variant.",
+      "sound_design": {
+        "signature": "One round report; optional very quiet airy decay is authored.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          4.8,
+          7.5
+        ],
+        "individual_trail_particle_range": [
+          1.0,
+          2.2
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Western willow preset; Japanese yanagi can instead be a softly falling non-spherical cluster.",
+      "source_ids": [
+        4,
+        5,
+        32
+      ]
+    },
+    {
+      "id": "brocade",
+      "label": "Brocade",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "Full umbrella with more densely textured hanging strands than the willow preset.",
+      "motion_and_fall": "Rounded opening into slow cascading arcs.",
+      "trail_rendering": "Fine gold glitter-like texture; brighter and fuller than the authored willow.",
+      "branching": "No new shell breaks solely because it is brocade.",
+      "color_behavior": "Warm gold with occasional pale flecks; optional colored tips.",
+      "sound_design": {
+        "signature": "One aerial report; glitter texture does not require loud crackle.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          4.2,
+          7.0
+        ],
+        "individual_trail_particle_range": [
+          0.8,
+          1.8
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Brocade, crown, willow and kamuro overlap; the relative density is an authored visual distinction.",
+      "source_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "kamuro",
+      "label": "Kamuro",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "Large rounded canopy that closes into a hanging, bob-like curtain.",
+      "motion_and_fall": "Long-lived heads descend substantially after the initial expansion.",
+      "trail_rendering": "Long dense amber-to-silvery-gold trails with restrained twinkle.",
+      "branching": "None in the base.",
+      "color_behavior": "Default subdued warm-gold canopy; contrasting pistil optional.",
+      "sound_design": {
+        "signature": "One aerial report, then space for the visible decay.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          5.5,
+          8.5
+        ],
+        "individual_trail_particle_range": [
+          1.1,
+          2.5
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Modern Japanese usage often means nishiki-kamurogiku; kamuro and nishiki are overlapping names rather than universally separate types.",
+      "source_ids": [
+        4,
+        13,
+        15
+      ]
+    },
+    {
+      "id": "nishiki",
+      "label": "Nishiki kamuro",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "Same canopy topology as kamuro, with a brighter and fuller authored appearance.",
+      "motion_and_fall": "Long fall; do not replace the descent with repeated explosions.",
+      "trail_rendering": "Rich pale-gold/whitish sparkling trails, kept granular rather than a solid neon curtain.",
+      "branching": "None unless a separately named finishing effect is added.",
+      "color_behavior": "Brighter pale-gold canopy; optional white strobe tips are a variant.",
+      "sound_design": {
+        "signature": "One report; optional faint texture, not automatic crackle.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          5.5,
+          8.5
+        ],
+        "individual_trail_particle_range": [
+          1.1,
+          2.5
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Nishiki is a preset label within the overlapping kamuro family. Hue and density are authored rather than matched to a particular maker's display.",
+      "source_ids": [
+        4,
+        6,
+        13,
+        15
+      ]
+    },
+    {
+      "id": "palm",
+      "label": "Palm",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "A small number of broad fronds; optional rising trunk leads into the crown.",
+      "motion_and_fall": "Bold outward motion then curved falling fronds; visible spaces between arms.",
+      "trail_rendering": "Thick high-brightness trails, unlike willow filaments.",
+      "branching": "None; optional small report accents are not part of the base preset.",
+      "color_behavior": "Gold/silver fronds with optional colored ends.",
+      "sound_design": {
+        "signature": "One broad aerial report; ascent rush optional.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.8,
+          4.8
+        ],
+        "individual_trail_particle_range": [
+          0.65,
+          1.4
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "APA describes six fronds, but this is not a universal count.",
+      "source_ids": [
+        1,
+        2,
+        5
+      ]
+    },
+    {
+      "id": "spider",
+      "label": "Spider",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "Sparse to moderate hard radial spokes with a jagged, fast opening.",
+      "motion_and_fall": "Very fast outward travel; extinguish before substantial sag.",
+      "trail_rendering": "Short-lived straight bright streaks, not long drooping palm fronds.",
+      "branching": "None.",
+      "color_behavior": "Bright warm or silver lines; tip change optional.",
+      "sound_design": {
+        "signature": "A sharp attack is an authored audio choice; no source specifies a unique spider timbre.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          0.8,
+          1.5
+        ],
+        "individual_trail_particle_range": [
+          0.18,
+          0.45
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Flat trajectory means little visible curvature here, not a required 2D disk.",
+      "source_ids": [
+        1
+      ]
+    },
+    {
+      "id": "horsetail",
+      "label": "Horsetail",
+      "group": "canopies",
+      "kind": "aerial-burst",
+      "geometry": "Compact one-sided plume rather than a full spherical flower.",
+      "motion_and_fall": "Retained upward momentum turns over quickly into a tightly grouped fall.",
+      "trail_rendering": "Long parallel-ish tails that remain near one another.",
+      "branching": "None.",
+      "color_behavior": "Gold/silver base; colored tips optional.",
+      "sound_design": {
+        "signature": "Softer release mapping than a hard spherical break; no measured loudness claim.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          3.6,
+          6.0
+        ],
+        "individual_trail_particle_range": [
+          0.8,
+          1.8
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Wider falling plumes are often called aerial waterfalls; keep that variant distinct from waterfall-curtain.",
+      "source_ids": [
+        1,
+        2,
+        4,
+        32
+      ]
+    },
+    {
+      "id": "ring",
+      "label": "Ring",
+      "group": "patterns",
+      "kind": "aerial-pattern",
+      "geometry": "Points on one planar expanding circle embedded in 3D.",
+      "motion_and_fall": "Self-similar radial expansion, then modest sag and extinction.",
+      "trail_rendering": "None or extremely short glints; a persistent connecting line is inappropriate.",
+      "branching": "None.",
+      "color_behavior": "Single or segmented color; multiple-ring variations are parameters.",
+      "sound_design": {
+        "signature": "One aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.0,
+          3.1
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.06
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Frontal orientation is an authored legibility aid; rotated planes should project as ellipses.",
+      "source_ids": [
+        3,
+        9
+      ]
+    },
+    {
+      "id": "saturn",
+      "label": "Saturn",
+      "group": "patterns",
+      "kind": "aerial-pattern",
+      "geometry": "A planar outer ring around a smaller spherical central flower.",
+      "motion_and_fall": "Ring and center open together with different radii.",
+      "trail_rendering": "Mostly clean points; core trail texture optional.",
+      "branching": "No new burst needed for the central sphere.",
+      "color_behavior": "Contrasting ring and center, often a clean two-color reading.",
+      "sound_design": {
+        "signature": "One shared aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.5,
+          3.8
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.3
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Ring-plus-pistil is supported at product level; final 3D proportions and orientation are authored.",
+      "source_ids": [
+        1,
+        9,
+        47
+      ]
+    },
+    {
+      "id": "heart",
+      "label": "Heart",
+      "group": "patterns",
+      "kind": "aerial-pattern",
+      "geometry": "An expanding planar heart outline, not a filled heart sprite.",
+      "motion_and_fall": "Maintain lobe and notch separation during early expansion, then allow sag.",
+      "trail_rendering": "Nearly tailless points to protect the silhouette.",
+      "branching": "None.",
+      "color_behavior": "One readable color; two-tone halves optional.",
+      "sound_design": {
+        "signature": "One aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.1,
+          3.3
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.06
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "A recognized pattern family; exact shape and frontal presentation are authored.",
+      "source_ids": [
+        1,
+        9
+      ]
+    },
+    {
+      "id": "star-pattern",
+      "label": "Star (pattern)",
+      "group": "patterns",
+      "kind": "aerial-pattern",
+      "geometry": "Five-point star outline in a 3D plane, sampled along its perimeter.",
+      "motion_and_fall": "Whole outline expands; avoid independent random speeds that erase the points.",
+      "trail_rendering": "Nearly tailless.",
+      "branching": "None.",
+      "color_behavior": "Single color for legibility.",
+      "sound_design": {
+        "signature": "One aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.1,
+          3.3
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.06
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "An authored five-point motif, not a reconstruction of a specific professional display.",
+      "source_ids": [
+        9
+      ]
+    },
+    {
+      "id": "spiral",
+      "label": "Spiral",
+      "group": "patterns",
+      "kind": "aerial-pattern",
+      "geometry": "An expanding planar spiral curve made from stars.",
+      "motion_and_fall": "The curve scales out; it is not a group of independently spinning tourbillons.",
+      "trail_rendering": "Point-like or minimal tails.",
+      "branching": "None.",
+      "color_behavior": "Single spiral or alternating color sections.",
+      "sound_design": {
+        "signature": "One aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.5,
+          3.8
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.08
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Lidu documents the pattern name; the curve and motion here are authored rather than matched to a recording.",
+      "source_ids": [
+        9,
+        37
+      ]
+    },
+    {
+      "id": "smiley",
+      "label": "Smiley",
+      "group": "patterns",
+      "kind": "aerial-pattern",
+      "geometry": "Outer circular face plus separate eye and mouth points.",
+      "motion_and_fall": "Coherent expansion preserves face proportions before modest fall.",
+      "trail_rendering": "Tailless by default.",
+      "branching": "None.",
+      "color_behavior": "Contrast features against outline; no filled emoji billboard.",
+      "sound_design": {
+        "signature": "One aerial report.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.1,
+          3.3
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.06
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Pattern topology is supported; camera-facing presentation is a usability decision.",
+      "source_ids": [
+        1,
+        9
+      ]
+    },
+    {
+      "id": "crossette",
+      "label": "Crossette",
+      "group": "transformations",
+      "kind": "aerial-transform",
+      "geometry": "Primary radial stars each divide into a small four-arm cross.",
+      "motion_and_fall": "Parents travel first; daughters inherit position and some momentum, then separate.",
+      "trail_rendering": "Medium parent trail, short clean daughter trails.",
+      "branching": "One delayed four-way split per participating parent; stop parent emission at split.",
+      "color_behavior": "Parent-to-child color transition optional.",
+      "sound_design": {
+        "signature": "Main report plus restrained synchronized split ticks; not a dense crackle bed.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.8,
+          4.4
+        ],
+        "individual_trail_particle_range": [
+          0.25,
+          0.65
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "A plus-shaped original burst is not the defining event; the readable delayed subdivision is.",
+      "source_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "crackle",
+      "label": "Crackle",
+      "group": "transformations",
+      "kind": "aerial-texture",
+      "geometry": "A distributed field of tiny expanding sparklets and brief microflashes.",
+      "motion_and_fall": "Follow parent stars or appear as terminal clusters; local microburst velocity is short-lived.",
+      "trail_rendering": "Short bushy sparks; avoid permanent glowing branches.",
+      "branching": "Local microbursts; a popcorn-style dark-to-flash ending is one variant.",
+      "color_behavior": "Brief white/gold flashes and dim warm embers.",
+      "sound_design": {
+        "signature": "Dense irregular discrete pops; optional finer sizzling bed for rain-like variants.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          1.2,
+          3.0
+        ],
+        "individual_trail_particle_range": [
+          0.05,
+          0.22
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Crackle, time rain and dragon eggs overlap; do not force all variants into the same timing.",
+      "source_ids": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "id": "strobe",
+      "label": "Strobe",
+      "group": "transformations",
+      "kind": "aerial-modifier-preset",
+      "geometry": "Ordinary sphere of heads whose brightness is time-modulated.",
+      "motion_and_fall": "Continue head trajectories through dark phases rather than freezing or respawning them.",
+      "trail_rendering": "Minimal trail so on/off heads stay distinct.",
+      "branching": "None.",
+      "color_behavior": "White or colored flashes; stagger phases across heads.",
+      "sound_design": {
+        "signature": "No automatic matching pop on each light pulse; aerial report only unless combined with crackle.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.6,
+          4.5
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.12
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "HEX suggests 1–2 Hz; any animation rate is authored. Reduced-flash mode must suppress this effect rather than being advertised as universally safe.",
+      "source_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "id": "glitter",
+      "label": "Glitter",
+      "group": "transformations",
+      "kind": "aerial-modifier-preset",
+      "geometry": "A tailed flower whose small trail sparks flash at different ages.",
+      "motion_and_fall": "Heads follow normal arcs; glitter sparklets lag behind and fade.",
+      "trail_rendering": "Sparse localized flashes within a granular trail, not head-wide on/off pulsing.",
+      "branching": "No parent-star splitting is required.",
+      "color_behavior": "Gold/silver warm trails with optional colored steady heads.",
+      "sound_design": {
+        "signature": "Aerial report plus optional very quiet airy texture; no compulsory loud popcorn crackle.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          3.0,
+          5.0
+        ],
+        "individual_trail_particle_range": [
+          0.45,
+          1.1
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "A trail-domain modifier presented as a preset; loose retail twinkle terminology can blur it with strobe.",
+      "source_ids": [
+        2,
+        6
+      ]
+    },
+    {
+      "id": "ghost",
+      "label": "Ghost",
+      "group": "transformations",
+      "kind": "aerial-modifier-preset",
+      "geometry": "Clean spherical bloom with a color front moving across sectors.",
+      "motion_and_fall": "Stars keep expanding continuously while their emission changes.",
+      "trail_rendering": "Little persistent trail, so old colors do not obscure the phase front.",
+      "branching": "No new shell breaks.",
+      "color_behavior": "Segmented sweep A to B; optional short dark transition per sector; reverse or quadrant variants later.",
+      "sound_design": {
+        "signature": "One report; do not play a second explosion solely for a color transition.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          3.0,
+          4.8
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.08
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Sweeper ghost is the stronger professional description; simple vanish/reappear may be a variant but not the whole definition.",
+      "source_ids": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": "color-change",
+      "label": "Color change",
+      "group": "transformations",
+      "kind": "aerial-modifier-preset",
+      "geometry": "Default peony sphere with a coherent color transition.",
+      "motion_and_fall": "Continuous trajectories; color state advances with star age.",
+      "trail_rendering": "Default tailless; trail color and head color can be independent in other bases.",
+      "branching": "None.",
+      "color_behavior": "Most heads change A to B together; allow a small authored age spread rather than arbitrary rainbow cycling.",
+      "sound_design": {
+        "signature": "One report with no extra bang at color change.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.6,
+          4.1
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.08
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Modifier, not a new shell topology; contrasting colors present simultaneously are not the same as a temporal change.",
+      "source_ids": [
+        2
+      ]
+    },
+    {
+      "id": "shell-of-shells",
+      "label": "Shell of shells · Senrin",
+      "group": "transformations",
+      "kind": "aerial-composite",
+      "geometry": "Initial parent dispersion followed by many small spatially separated flower centers.",
+      "motion_and_fall": "Child centers drift apart before their own local spherical expansions.",
+      "trail_rendering": "Keep a readable gap before child blooms; each child has its own compact tail profile.",
+      "branching": "Two visible levels: parent release then clustered child breaks; cap hierarchy at this level.",
+      "color_behavior": "Child flowers may differ in color; senrin preset opens the small flowers near-simultaneously.",
+      "sound_design": {
+        "signature": "Initial report followed by a cluster of smaller reports, aligned with the visible child events.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          4.0,
+          6.5
+        ],
+        "individual_trail_particle_range": [
+          0.2,
+          0.65
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Separate this spatial cluster from a serial multi-break effect along one continuing path; thousands is not a literal required count.",
+      "source_ids": [
+        1,
+        5,
+        32
+      ]
+    },
+    {
+      "id": "falling-leaves",
+      "label": "Falling leaves",
+      "group": "drifters",
+      "kind": "aerial-drifter",
+      "geometry": "A loose cloud of persistent colored points or tiny dashes.",
+      "motion_and_fall": "Slow gravity-led descent with gentle correlated side-to-side flutter and shared wind.",
+      "trail_rendering": "Almost none; do not make each leaf a long comet.",
+      "branching": "None.",
+      "color_behavior": "Sustained colored glow; optional twinkle rather than mandatory strobe.",
+      "sound_design": {
+        "signature": "Soft release mapping; no invented leaf rustle or compulsory buzzing.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          4.0,
+          7.0
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.12
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Passive drift distinguishes the authored preset from active darting fish/bees; flutter details remain artistic.",
+      "source_ids": [
+        1,
+        3,
+        5
+      ]
+    },
+    {
+      "id": "bees",
+      "label": "Bees",
+      "group": "drifters",
+      "kind": "aerial-mover",
+      "geometry": "Compact swarm of erratic small lights.",
+      "motion_and_fall": "Short correlated turns and accelerations; no independent per-frame position noise.",
+      "trail_rendering": "Short yellow/silver spark traces; individual paths remain visible.",
+      "branching": "No regular subdivision.",
+      "color_behavior": "Single light color or small mixed palette.",
+      "sound_design": {
+        "signature": "Soft release; an optional restrained buzzing hum is supported for hachi/hummer variants.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          1.8,
+          3.2
+        ],
+        "individual_trail_particle_range": [
+          0.08,
+          0.22
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Western names overlap fish/spinners; a buzz is not guaranteed by every bees product.",
+      "source_ids": [
+        2,
+        3,
+        5,
+        33
+      ]
+    },
+    {
+      "id": "fish",
+      "label": "Fish",
+      "group": "drifters",
+      "kind": "aerial-mover",
+      "geometry": "Loose group of wriggling, independently moving lights.",
+      "motion_and_fall": "Longer graceful darts than the authored bees; motion persists rather than passive leaf settling.",
+      "trail_rendering": "Minimal short traces, not willow-like drapery.",
+      "branching": "None.",
+      "color_behavior": "Small colored or silver points.",
+      "sound_design": {
+        "signature": "Soft release; relatively restrained sound, no mandatory hum or whistle.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.0,
+          3.4
+        ],
+        "individual_trail_particle_range": [
+          0.05,
+          0.18
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "The bees/fish size hierarchy is only one vendor usage; relative scale and smoothness are authored differentiators.",
+      "source_ids": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "id": "tourbillon",
+      "label": "Tourbillon",
+      "group": "drifters",
+      "kind": "aerial-mover",
+      "geometry": "Moving spinning spark sources with curled local traces.",
+      "motion_and_fall": "Combine drift with rotating emission and irregular changes of direction.",
+      "trail_rendering": "Short corkscrew/tumbling spray, not a static spiral-shaped arrangement.",
+      "branching": "None unless a named finishing effect is added.",
+      "color_behavior": "Gold/silver sprays by default.",
+      "sound_design": {
+        "signature": "Soft release and optional hummer buzz; not every tourbillon must whistle.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          2.0,
+          3.8
+        ],
+        "individual_trail_particle_range": [
+          0.12,
+          0.4
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Accept tourbillion/tourbillions/turbillion aliases. Farfalle is related but not required as a separate button.",
+      "source_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "comet",
+      "label": "Comet",
+      "group": "ground-and-rise",
+      "kind": "rising-emitter",
+      "geometry": "One rising bright head with a tail; no terminal spherical explosion by default.",
+      "motion_and_fall": "Rise, decelerate, extinguish; slight arc or angled trajectory is an authored option.",
+      "trail_rendering": "Thick continuous tail with individually decaying sparks.",
+      "branching": "None.",
+      "color_behavior": "Warm or silver tail; colored head; optional tailless pearl variant.",
+      "sound_design": {
+        "signature": "Short launch transient and restrained rush; whistle is an explicit optional variant.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          1.2,
+          2.4
+        ],
+        "individual_trail_particle_range": [
+          0.3,
+          0.75
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "A comet can also be an ascent accessory to another effect. Do not make the standalone preset burst automatically.",
+      "source_ids": [
+        2,
+        5,
+        6,
+        32,
+        43
+      ]
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "group": "ground-and-rise",
+      "kind": "ground-rising-burst",
+      "geometry": "A low broad cone or bouquet of many stars emerging together from the horizon.",
+      "motion_and_fall": "Immediate upward spread followed by deceleration and fall; no high-altitude parent burst.",
+      "trail_rendering": "Short clean star traces or a selected glitter/crackle texture.",
+      "branching": "None by default.",
+      "color_behavior": "Color cloud or layered bands; keep lower scene readable.",
+      "sound_design": {
+        "signature": "Short low launch thump/rush mapping; optional crackle inherits its own audio.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          1.0,
+          1.9
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.35
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Ground-origin effect whose light moves into the air; not equivalent to a high aerial flower.",
+      "source_ids": [
+        1
+      ]
+    },
+    {
+      "id": "fountain",
+      "label": "Fountain",
+      "group": "ground-and-rise",
+      "kind": "ground-continuous",
+      "geometry": "Persistent upward spray from a fixed ground point.",
+      "motion_and_fall": "Fresh sparks rise continuously while older sparks arc outward and descend.",
+      "trail_rendering": "Moderate-lived granular sparks; brightness concentrated near emission.",
+      "branching": "Continuous emission, not a chain of spherical bursts.",
+      "color_behavior": "Gold/silver base with optional color pearls or crackle phases.",
+      "sound_design": {
+        "signature": "Continuous hiss/rush is an authored sound mapping; discrete crackle only when that variant is selected.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          6.0,
+          12.0
+        ],
+        "individual_trail_particle_range": [
+          0.35,
+          0.9
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Gerb/fountain naming varies; this is a readable cascading fountain preset, not a hardware model.",
+      "source_ids": [
+        5,
+        43
+      ]
+    },
+    {
+      "id": "waterfall-curtain",
+      "label": "Waterfall · Niagara",
+      "group": "ground-and-rise",
+      "kind": "ground-set-piece",
+      "geometry": "A fixed elevated horizontal band producing a curtain of downward sparks.",
+      "motion_and_fall": "Continuous gravity-led fall from a stationary line with modest shared wind.",
+      "trail_rendering": "Long thin descending spark strands; no giant central aerial break.",
+      "branching": "Continuous distributed emission.",
+      "color_behavior": "Silver-white or warm gold curtain.",
+      "sound_design": {
+        "signature": "Soft sustained hiss/rush mapping; no inherent aerial bang.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          6.0,
+          12.0
+        ],
+        "individual_trail_particle_range": [
+          0.9,
+          2.2
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Waterfall can name either aerial falling stars or a suspended curtain; this preset uses the curtain form described by Pyrostar and JPA.",
+      "source_ids": [
+        1,
+        3,
+        4,
+        34
+      ]
+    },
+    {
+      "id": "roman-candle",
+      "label": "Roman candle",
+      "group": "ground-and-rise",
+      "kind": "repeating-emitter",
+      "geometry": "Repeated individual pearls/comets from the same scene anchor.",
+      "motion_and_fall": "Each light has its own rise and extinction; optional bombette-style small terminal bloom later.",
+      "trail_rendering": "Inherited from pearl/comet, not a new trail species.",
+      "branching": "Repetition over time, not branching of one aerial star.",
+      "color_behavior": "Alternate shot colors without recoloring previous live shots.",
+      "sound_design": {
+        "signature": "A sequence of small launch transients; only bombette variants add terminal reports.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          5.0,
+          8.0
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.6
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Authored interval 0.6–1.0 seconds; this is an emitter sequence, not a unique burst shape.",
+      "source_ids": [
+        1,
+        5
+      ]
+    },
+    {
+      "id": "wheel",
+      "label": "Wheel",
+      "group": "ground-and-rise",
+      "kind": "ground-set-piece",
+      "geometry": "Fixed-center circular rotating pattern of spark emission.",
+      "motion_and_fall": "Spark paths leave a turning source and then fall; the wheel center stays in place.",
+      "trail_rendering": "Short arcs that reveal rotation without becoming a filled glowing disk.",
+      "branching": "Continuous emission.",
+      "color_behavior": "Warm/silver rotating spokes; phases can change color.",
+      "sound_design": {
+        "signature": "Restrained sustained rush/hiss mapping; no continuous engine sound claim.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          6.0,
+          12.0
+        ],
+        "individual_trail_particle_range": [
+          0.25,
+          0.7
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Do not confuse a ground wheel with a flying girandola. Angular speed is authored, not measured.",
+      "source_ids": [
+        34,
+        43
+      ]
+    },
+    {
+      "id": "set-piece",
+      "label": "Set piece",
+      "group": "ground-and-rise",
+      "kind": "ground-set-piece",
+      "geometry": "Static arrangement of colored luminous points tracing a symbol, word or drawing.",
+      "motion_and_fall": "Light holds in fixed world positions; add only tiny independent flicker.",
+      "trail_rendering": "Little or no moving trail.",
+      "branching": "None; many stationary light elements form one image.",
+      "color_behavior": "Readable limited palette; simultaneous reveal and fade.",
+      "sound_design": {
+        "signature": "Quiet ambience or faint hiss mapping; no invented sequence of aerial reports.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          8.0,
+          12.0
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0.06
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "The button means lancework-like imagery; the broader term set piece can include other ground effects. Any lettering is original app artwork.",
+      "source_ids": [
+        1,
+        43
+      ]
+    },
+    {
+      "id": "salute",
+      "label": "Salute",
+      "group": "sound",
+      "kind": "aerial-audio-accent",
+      "geometry": "A brief compact flash with minimal persistent star structure.",
+      "motion_and_fall": "Fast flash decays into a small dim smoke cue, rather than a large colorful bloom.",
+      "trail_rendering": "None by default; sparse silver accents are an optional variant.",
+      "branching": "None.",
+      "color_behavior": "Brief warm-white flash, restrained screen bloom.",
+      "sound_design": {
+        "signature": "A dominant sharp report with authored low body and reverberant decay; relative loudness is compressed for comfortable playback.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          0.12,
+          0.3
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Sound-first accent. Not all real salutes are visually identical, and no SPL or waveform was measured.",
+      "source_ids": [
+        1
+      ]
+    },
+    {
+      "id": "fan",
+      "label": "Fan",
+      "group": "choreography",
+      "kind": "choreography",
+      "geometry": "A spatial-temporal arrangement of multiple existing emitters or bursts.",
+      "motion_and_fall": "Arrange paths across the lower/middle sky: simultaneous spread, left/right chase, center-out, or mirrored pairs.",
+      "trail_rendering": "Inherited from the child effects; fan has no independent particle tail.",
+      "branching": "No particle branching; it schedules separate effect events.",
+      "color_behavior": "Use a limited palette per phrase rather than random full-spectrum shots.",
+      "sound_design": {
+        "signature": "Inherit child sounds at their event times; fan is not a new sound class.",
+        "status": "authored_mapping_informed_by_claims_not_measured_recording"
+      },
+      "authored_timing_seconds": {
+        "active_event_range": [
+          1.0,
+          3.0
+        ],
+        "individual_trail_particle_range": [
+          0,
+          0
+        ],
+        "status": "authored_not_measured",
+        "clock": "from visible break for aerial effects; first light for emitters"
+      },
+      "uncertainty_and_aliases": "Keep outside burst geometry. V/W patterns and a Z/sweep are variants; authored fan-chase spacing can start at 0.10–0.25 seconds.",
+      "source_ids": [
+        3,
+        5,
+        22
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "title": "American Pyrotechnics Association: Display Fireworks Glossary",
+      "url": "https://www.americanpyro.com/display-fireworks-glossary"
+    },
+    {
+      "id": 2,
+      "title": "Finale 3D: Glossary of VDL Effect Terms",
+      "url": "https://finale3d.com/documentation/vdl-effect-glossary"
+    },
+    {
+      "id": 3,
+      "title": "Pyrostar: Glossary",
+      "url": "https://pyrostar.be/glossary"
+    },
+    {
+      "id": 4,
+      "title": "HEX Fireworks: Firework Jargon Explained",
+      "url": "https://www.hexfireworks.co.uk/blogs/news/firework-jargon-explained"
+    },
+    {
+      "id": 5,
+      "title": "Wholesale Fireworks: Fireworks Effects Chart",
+      "url": "https://wfboom.com/fireworks-effects-chart"
+    },
+    {
+      "id": 6,
+      "title": "Sky Bacon: 12 Types of Fireworks Effects",
+      "url": "https://skybaconfireworks.com/post/12-types-of-fireworks-effects"
+    },
+    {
+      "id": 8,
+      "title": "Elevated Fireworks: The Different Firework Effects Explained",
+      "url": "https://elevatedfireworks.com/blogs/product-education/the-different-firework-effects-explained"
+    },
+    {
+      "id": 9,
+      "title": "令和８年 花火入門",
+      "url": "http://www.hanabi-jpa.jp/booklet2026/pageindices/index15.html"
+    },
+    {
+      "id": 13,
+      "title": "割物（わりもの） - 佐藤煙火",
+      "url": "http://www.satoenka.jp/kind/wari.html"
+    },
+    {
+      "id": 15,
+      "title": "冠菊（かむろぎく）ってなあに？ | 花火ワールドに光る職人芸 磯谷煙火店　Art of Hanabi",
+      "url": "https://uchiage-hanabi.com/blog/pyrotechnician-notes/what-is-kamurogiku"
+    },
+    {
+      "id": 22,
+      "title": "MADE-TO-ORDER FIREWORKS SHOW PRODUCTION - 日本橋丸玉屋",
+      "url": "https://marutamaya.jp/en/passion"
+    },
+    {
+      "id": 32,
+      "title": "佐藤煙火 — ポカ物、半割物、その他",
+      "url": "http://www.satoenka.jp/kind/poka.html"
+    },
+    {
+      "id": 33,
+      "title": "日本煙火協会 — 令和８年 花火入門, viewer page 16/49",
+      "url": "http://www.hanabi-jpa.jp/booklet2026/pageindices/index16.html"
+    },
+    {
+      "id": 34,
+      "title": "日本煙火協会 — 令和８年 花火入門, viewer page 25/49",
+      "url": "http://www.hanabi-jpa.jp/booklet2026/pageindices/index25.html"
+    },
+    {
+      "id": 37,
+      "title": "Pattern Shell Fireworks | Creative Sky Effects by Lidu China",
+      "url": "https://lidufireworks.com/Pattern-Shells"
+    },
+    {
+      "id": 43,
+      "title": "Glossary of Fireworks Terms - American Pyrotechnics Association",
+      "url": "https://www.americanpyro.com/glossary-of-pyrotechnic-terms"
+    },
+    {
+      "id": 47,
+      "title": "SATURN RING 1/1",
+      "url": "https://rkmfireworks.net/saturn-ring"
+    }
+  ]
+}

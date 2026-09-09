@@ -1,0 +1,34 @@
+MIT License
+
+Copyright (c) 2026 Afterlight contributors
+
+This license applies to the original audio implementation in src/audio/, the
+original renderer scripts/render-audio.mjs, the audio tests, and every synthesized
+WAV file and manifest in public/audio/. All audio was generated from original
+algorithms (noise, envelopes, oscillators, grains and authored reflection taps).
+No field recordings, commercial sample libraries, third-party impulse responses,
+voice recordings or third-party musical works were sampled or incorporated.
+Research quotations in docs/audio.md and evidence/audio-* retain their respective
+source rights; they are citations, not licensed audio or a claim of ownership.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to
+do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+The sounds are aesthetic simulations, not calibrated sound-pressure recordings.
+A digital limiter is not a guarantee of safe acoustic exposure: use a comfortable
+playback volume. There is no claim of human listening validation.

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+evidence/
+playwright-report/
+test-results/
+.DS_Store
+__pycache__/
+*.py[cod]
+docs/research/evidence/
+docs/research/claims.json
+docs/research/sources-ledger.json
+docs/research/sources.md
+release/

@@ -1,0 +1,25 @@
+# Static-host defaults. Apache hosts apply these; other hosts may use the
+# equivalent response policies documented in docs/deployment.md.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=302,L,NE]
+</IfModule>
+<IfModule mod_mime.c>
+  AddType text/javascript .js .mjs
+  AddType application/manifest+json .webmanifest
+  AddType application/json .json
+  AddType font/woff2 .woff2
+  AddType audio/wav .wav
+  AddType image/svg+xml .svg
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Cache-Control "no-cache"
+  <Files "sw.js">
+    Header always set Cache-Control "no-store, max-age=0"
+  </Files>
+</IfModule>
