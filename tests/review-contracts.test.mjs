@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
+import { translate } from "../src/i18n.js";
 import {
   createLayer,
   validateShow,
@@ -102,6 +103,7 @@ for (const reason of ["hidden", "disposed", "cancel"])
       textContent: "",
     };
     const context = vm.createContext({
+      t: translate,
       state: { sound: false, soundPreferred: false },
       audio,
       disposed: false,

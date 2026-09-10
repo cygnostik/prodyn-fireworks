@@ -177,14 +177,6 @@
             </button>
           </div>
         </div>
-        <div class="portrait-note">
-          <span class="fine-rule"></span>
-          <p>A whole night,<br /><strong>at your fingertips.</strong></p>
-          <span
-            >Tap to fire. Add + to layer.<br />Turn your phone for a wider
-            sky.</span
-          >
-        </div>
         <button id="cinema-exit" class="cinema-exit quiet-button">
           <span data-icon="stack"></span>SHOW CONTROLS
         </button>
@@ -367,6 +359,13 @@
       </div>
       <h2 id="settings-title">Make yourself at home.</h2>
       <div class="settings-grid">
+        <label for="language"
+          ><span>Language</span
+          ><select id="language" aria-label="Language">
+            <option value="en" lang="en">English</option>
+            <option value="es-MX" lang="es-MX">Español</option>
+          </select></label
+        >
         <label
           >Volume <output id="volume-value">60%</output
           ><input id="volume" type="range" min="0" max="100" value="60"
@@ -476,6 +475,16 @@
         </p>
         <a href="./field-guide.html">Read the firework field guide</a> ·
         <a href="./credits.html">Credits and licence</a>
+        <div lang="es-MX">
+          <h2>Afterlight — Pinta la noche</h2>
+          <p>
+            Este instrumento interactivo de fuegos artificiales en 3D necesita
+            JavaScript y WebGL 2. Activa JavaScript para lanzar efectos y
+            componer un gran final.
+          </p>
+          <a href="./field-guide.html">Leer la guía de fuegos artificiales</a> ·
+          <a href="./credits.html">Créditos y licencia</a>
+        </div>
       </section></noscript
     >
     <script type="module" src="./src/main.js"></script>

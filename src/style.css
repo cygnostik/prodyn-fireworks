@@ -396,9 +396,6 @@ select {
   border: 1px solid var(--pd-signal);
   color: var(--pd-signal);
 }
-.portrait-note {
-  display: none;
-}
 .deck {
   padding: 0 var(--sp-7) var(--sp-3);
   padding-bottom: max(var(--sp-3), env(safe-area-inset-bottom));
@@ -1458,6 +1455,7 @@ dialog h2 {
 }
 @media (max-width: 639px) and (orientation: portrait) {
   .theater {
+    flex: 0 0 auto;
     flex-direction: column;
     justify-content: flex-start;
     padding-top: var(--sp-2);
@@ -1466,36 +1464,7 @@ dialog h2 {
     width: 100%;
     flex-shrink: 0;
   }
-  .portrait-note {
-    display: flex;
-    flex: 1;
-    width: 100%;
-    min-height: 70px;
-    align-items: center;
-    padding: var(--sp-5) var(--sp-6);
-    gap: var(--sp-4);
-  }
-  .fine-rule {
-    height: 56px;
-    width: 1px;
-    background: var(--pd-cyan-deep);
-    flex-shrink: 0;
-  }
-  .portrait-note p {
-    font-size: var(--fs-h3);
-    line-height: 1.25;
-    font-weight: 300;
-  }
-  .portrait-note strong {
-    font-weight: 500;
-  }
-  .portrait-note > span:last-child {
-    font-size: var(--fs-micro);
-    color: var(--pd-ivory-muted);
-    line-height: 1.7;
-    max-width: 115px;
-    margin-left: auto;
-  }
+
   .sky-title .eyebrow {
     display: none;
   }
@@ -1680,11 +1649,11 @@ dialog h2 {
 }
 .app.cinema .masthead,
 .app.cinema .deck,
-.app.cinema .portrait-note,
 .app.cinema .stage-bottom {
   display: none;
 }
 .app.cinema .theater {
+  flex: 1;
   justify-content: center;
   align-items: center;
   padding: 0;

@@ -46,7 +46,7 @@ test("rendered WAV pack matches every original seed and decodes as bounded stere
     .sort();
   assert.deepEqual(
     (await readdir(packURL)).filter((s) => s.endsWith(".wav")).sort(),
-    expectedFiles,
+    [...expectedFiles, "current-fountain.wav", "current-waterfall.wav"].sort(),
   );
   for (const sample of [...manifest.samples, manifest.demonstration]) {
     const file = await readFile(new URL(sample.file, packURL));

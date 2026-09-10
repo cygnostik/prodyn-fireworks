@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
+import { translate } from "../src/i18n.js";
 
 const source = await readFile(
   new URL("../src/main.js", import.meta.url),
@@ -75,6 +76,7 @@ function fixture({ saved = "off", storageFails = false } = {}) {
     textContent: "",
   };
   const context = vm.createContext({
+    t: translate,
     audio,
     state: { sound: false, soundPreferred: false },
     disposed: false,

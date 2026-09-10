@@ -1,4 +1,32 @@
 import "./style.css";
+import { getLanguage, setLanguage } from "../public/language.js";
+import {
+  translate,
+  translateError,
+  escapeHTML,
+  bindStaticCopy,
+} from "./i18n.js";
+const t = (key, values = {}) =>
+  translate(
+    typeof key === "function" ? key() : key,
+    Object.fromEntries(
+      Object.entries(values).map(([key, value]) => [
+        key,
+        typeof value === "function" ? value() : value,
+      ]),
+    ),
+    getLanguage(),
+  );
+const h = (key, values = {}) => escapeHTML(t(key, values));
+const errorCopy = (error, fallback) =>
+  translateError(error, getLanguage(), fallback);
+const renderStaticCopy = bindStaticCopy();
+const textCopies = new Map();
+function setCopy(id, key, values = {}) {
+  textCopies.set(id, { key, values });
+  document.getElementById(id).textContent = t(key, values);
+}
+
 import {
   EFFECTS,
   EFFECT_BY_ID,
@@ -32,7 +60,7 @@ const safeStorage = {
 const saved = readSaved(safeStorage);
 let show = saved.show || {
   version: 1,
-  title: "My night sky",
+  title: t("My night sky"),
   duration: 22,
   layers: [],
 };
@@ -46,7 +74,11 @@ if (location.hash.startsWith("#show=")) {
     sharedMode = true;
     initialMessage = "Shared finale opened. Your saved finale has been kept.";
   } catch (error) {
-    initialMessage = error.message;
+    initialMessage = () =>
+      errorCopy(
+        error,
+        "The file could not be read. Choose a valid Afterlight JSON show file.",
+      );
   }
 }
 const media = matchMedia("(prefers-reduced-motion: reduce)");
@@ -96,21 +128,22 @@ const player = new ShowPlayer(
   },
 );
 
-function toast(message) {
-  $("toast").textContent = message;
+function toast(message, values = {}) {
+  setCopy("toast", message, values);
   $("toast").classList.add("visible");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $("toast").classList.remove("visible"), 3600);
 }
 function persist() {
   if (sharedMode) {
-    $("save-note").textContent = "SHARED SHOW · ORIGINAL KEPT";
+    setCopy("save-note", "SHARED SHOW · ORIGINAL KEPT");
     return;
   }
   const ok = saveShow(safeStorage, show);
-  $("save-note").textContent = ok
-    ? "SAVED ON THIS DEVICE"
-    : "USE SAVE FILE TO KEEP THIS SHOW";
+  setCopy(
+    "save-note",
+    ok ? "SAVED ON THIS DEVICE" : "USE SAVE FILE TO KEEP THIS SHOW",
+  );
   if (!ok)
     toast(
       "Browser storage is unavailable. Save a show file to keep your finale.",
@@ -138,7 +171,7 @@ function availableEffects() {
 function renderBanks() {
   $("banks").innerHTML = GROUPS.map(
     (g) =>
-      `<button class="bank" data-bank="${g.id}" aria-pressed="${state.group === g.id}" title="${g.name}">${pictogram(g.icon, "bank-pic")}<span>${g.name}</span></button>`,
+      `<button class="bank" data-bank="${g.id}" aria-pressed="${state.group === g.id}" title="${h(g.name)}">${pictogram(g.icon, "bank-pic")}<span>${h(g.name)}</span></button>`,
   ).join("");
 }
 function renderPad() {
@@ -146,7 +179,7 @@ function renderPad() {
   $("effect-pad").innerHTML = availableEffects()
     .map(
       (e, i) =>
-        `<div class="effect-key ${state.selected === e.id ? "selected" : ""}" data-key="${e.id}"><button class="effect-fire" data-fire="${e.id}" aria-label="Fire ${e.name}" title="${e.name} · ${i + 1}">${pictogram(e.id, "effect-pic")}<span class="effect-name">${e.name}</span></button><button class="effect-add" data-add="${e.id}" aria-label="Add ${e.name} to finale" title="Add ${e.name} to finale">+<span>LAYER</span></button></div>`,
+        `<div class="effect-key ${state.selected === e.id ? "selected" : ""}" data-key="${e.id}"><button class="effect-fire" data-fire="${e.id}" aria-label="${h("Fire {name}", { name: t(e.name) })}" title="${h(e.name)} · ${i + 1}">${pictogram(e.id, "effect-pic")}<span class="effect-name">${h(e.name)}</span></button><button class="effect-add" data-add="${e.id}" aria-label="${h("Add {name} to finale", { name: t(e.name) })}" title="${h("Add {name} to finale", { name: t(e.name) })}">+<span>${h("LAYER")}</span></button></div>`,
     )
     .join("");
   updateAvailability();
@@ -154,30 +187,30 @@ function renderPad() {
 function selectEffect(id) {
   if (!EFFECT_BY_ID[id]) return;
   state.selected = id;
-  $("selected-name").textContent = EFFECT_BY_ID[id].name;
-  $("selected-description").textContent = EFFECT_BY_ID[id].description;
+  $("selected-name").textContent = t(EFFECT_BY_ID[id].name);
+  $("selected-description").textContent = t(EFFECT_BY_ID[id].description);
   document
     .querySelectorAll("[data-key]")
     .forEach((n) => n.classList.toggle("selected", n.dataset.key === id));
   $("fire-selected").setAttribute(
     "aria-label",
-    `Fire selected: ${EFFECT_BY_ID[id].name}`,
+    t("Fire selected: {name}", { name: t(EFFECT_BY_ID[id].name) }),
   );
   $("add-selected").setAttribute(
     "aria-label",
-    `Add selected to finale: ${EFFECT_BY_ID[id].name}`,
+    t("Add selected to finale: {name}", { name: t(EFFECT_BY_ID[id].name) }),
   );
 }
 function renderPalettes() {
   $("swatches").innerHTML = PALETTES.map(
     (p) =>
-      `<button class="swatch ${p.id === "signature" ? "signature" : ""}" data-palette="${p.id}" style="--swatch:${p.color}" aria-label="${p.name} colour" aria-pressed="${state.palette === p.id}" title="${p.name}"></button>`,
+      `<button class="swatch ${p.id === "signature" ? "signature" : ""}" data-palette="${p.id}" style="--swatch:${p.color}" aria-label="${h("{name} colour", { name: t(p.name) })}" aria-pressed="${state.palette === p.id}" title="${h(p.name)}"></button>`,
   ).join("");
 }
 function setPalette(id) {
   if (!PALETTES.some((p) => p.id === id)) return;
   state.palette = id;
-  $("palette-name").textContent = PALETTES.find((p) => p.id === id).name;
+  $("palette-name").textContent = t(PALETTES.find((p) => p.id === id).name);
   document
     .querySelectorAll("[data-palette]")
     .forEach((n) =>
@@ -216,22 +249,28 @@ function launch(options = {}, manual = true) {
       return false;
     }
     state.launches++;
-    $("fired-name").textContent = EFFECT_BY_ID[effectId].name;
+    setCopy("fired-name", EFFECT_BY_ID[effectId].name);
     return true;
   } catch (error) {
-    toast(`Could not fire this effect: ${error.message}`);
+    toast("Could not fire this effect: {error}", {
+      error: () => errorCopy(error),
+    });
     return false;
   }
 }
 function addLayer(id = state.selected) {
   if (show.layers.length >= MAX_LAYERS) {
-    toast(`The finale holds ${MAX_LAYERS} layers. Remove one to make room.`);
+    toast("The finale holds {count} layers. Remove one to make room.", {
+      count: MAX_LAYERS,
+    });
     return;
   }
   show.layers.push(createLayer(id, state.palette));
   persist();
   renderFinale();
-  toast(`${EFFECT_BY_ID[id].name} added to the finale.`);
+  toast("{name} added to the finale.", {
+    name: () => t(EFFECT_BY_ID[id].name),
+  });
 }
 function renderFinale() {
   const focus = document.activeElement;
@@ -246,7 +285,7 @@ function renderFinale() {
     .map((l, i) => {
       const e = EFFECT_BY_ID[l.effectId],
         palette = PALETTES.find((p) => p.id === l.palette);
-      return `<li class="layer-tile" data-layer="${l.id}"><div class="layer-tile-head">${pictogram(l.effectId, "layer-pic")}<span class="layer-index">${String(i + 1).padStart(2, "0")}</span></div><h3>${e.name}</h3><p class="layer-palette">${palette.name}</p><div class="layer-controls"><button class="density-button" data-action="density" aria-label="${e.name} density ${l.density}. Change density" title="Density: ${["", "sparse", "full", "intense"][l.density]}">${"Ⅰ".repeat(l.density)}</button><div class="layer-tools"><button data-action="left" aria-label="Move ${e.name} earlier" ${i === 0 ? "disabled" : ""}>‹</button><button data-action="right" aria-label="Move ${e.name} later" ${i === show.layers.length - 1 ? "disabled" : ""}>›</button><button data-action="remove" aria-label="Remove ${e.name} layer">×</button></div></div></li>`;
+      return `<li class="layer-tile" data-layer="${l.id}"><div class="layer-tile-head">${pictogram(l.effectId, "layer-pic")}<span class="layer-index">${String(i + 1).padStart(2, "0")}</span></div><h3>${h(e.name)}</h3><p class="layer-palette">${h(palette.name)}</p><div class="layer-controls"><button class="density-button" data-action="density" aria-label="${h("{name} density {density}. Change density", { name: t(e.name), density: l.density })}" title="${h("Density: {density}", { density: t(["", "sparse", "full", "intense"][l.density]) })}">${"Ⅰ".repeat(l.density)}</button><div class="layer-tools"><button data-action="left" aria-label="${h("Move {name} earlier", { name: t(e.name) })}" ${i === 0 ? "disabled" : ""}>‹</button><button data-action="right" aria-label="${h("Move {name} later", { name: t(e.name) })}" ${i === show.layers.length - 1 ? "disabled" : ""}>›</button><button data-action="remove" aria-label="${h("Remove {name} layer", { name: t(e.name) })}">×</button></div></div></li>`;
     })
     .join("");
   $("cue-ribbon").hidden = !show.layers.length;
@@ -268,8 +307,8 @@ function updateFinaleControls() {
     !state.ready || (!show.layers.length && !player?.running);
   $("finale-fire").classList.toggle("playing", Boolean(player?.running));
   $("finale-fire-label").textContent = player?.running
-    ? "STOP FINALE"
-    : "FIRE FINALE";
+    ? t("STOP FINALE")
+    : t("FIRE FINALE");
   $("show-progress").hidden = !player?.running;
   $("clear-finale").disabled = show.layers.length === 0;
   $("export-show").disabled = show.layers.length === 0;
@@ -297,14 +336,17 @@ function startFinale() {
   player.start(show.layers, { duration: show.duration, seed: ++seed });
   updateFinaleControls();
   openFinale(false);
-  toast(`${show.title || "Your finale"} · ${show.layers.length} layers`);
+  toast("{title} · {count} layers", {
+    title: show.title || (() => t("Your finale")),
+    count: show.layers.length,
+  });
 }
 function setPaused(value) {
   state.paused = Boolean(value);
   $("pause-toggle").setAttribute("aria-pressed", String(state.paused));
   $("pause-toggle").setAttribute(
     "aria-label",
-    state.paused ? "Resume the show" : "Pause the show",
+    t(state.paused ? "Resume the show" : "Pause the show"),
   );
   $("pause-toggle").innerHTML = state.paused ? ICONS.play : ICONS.pause;
   $("paused-label").hidden = !state.paused;
@@ -316,7 +358,7 @@ function clearSky() {
   introActive = false;
   engine?.reset();
   audio.stop();
-  $("fired-name").textContent = "A clean slate.";
+  setCopy("fired-name", "A clean slate.");
   updateFinaleControls();
 }
 async function toggleSound() {
@@ -377,20 +419,20 @@ function renderSound() {
   $("sound-toggle").setAttribute("aria-pressed", String(state.sound));
   $("sound-toggle").setAttribute(
     "aria-label",
-    soundPending
-      ? "Cancel starting sound"
-      : state.sound
-        ? "Mute sound"
-        : "Enable sound",
+    t(
+      soundPending
+        ? "Cancel starting sound"
+        : state.sound
+          ? "Mute sound"
+          : "Enable sound",
+    ),
   );
   $("sound-toggle").querySelector("[data-icon]").innerHTML = state.sound
     ? ICONS["sound-on"]
     : ICONS["sound-off"];
-  $("sound-label").textContent = soundPending
-    ? "STARTING…"
-    : state.sound
-      ? "SOUND ON"
-      : "SOUND OFF";
+  $("sound-label").textContent = t(
+    soundPending ? "STARTING…" : state.sound ? "SOUND ON" : "SOUND OFF",
+  );
 }
 function readSoundPreference() {
   try {
@@ -461,7 +503,7 @@ function rendererFailed(error) {
   state.ready = false;
   state.error = error?.message || String(error);
   $("canvas-error").hidden = false;
-  $("stage-status").textContent = "";
+  setCopy("stage-status", "");
   $("sky").classList.remove("ready");
   player.stop();
   audio.stop();
@@ -482,7 +524,7 @@ async function initRenderer() {
   const generation = ++rendererGeneration;
   try {
     $("canvas-error").hidden = true;
-    $("stage-status").textContent = "Preparing the sky…";
+    setCopy("stage-status", "Preparing the sky…");
     const { AfterlightEngine } = await import("./engine/engine.js");
     if (disposed || generation !== rendererGeneration) return;
     if (engine) engine.dispose();
@@ -507,7 +549,7 @@ async function initRenderer() {
     resize();
     engine.render();
     $("sky").classList.add("ready");
-    $("stage-status").textContent = "";
+    setCopy("stage-status", "");
     updateAvailability();
     if (state.gentle) {
       introActive = false;
@@ -614,7 +656,7 @@ async function shareShow() {
           );
       }
     } else {
-      window.prompt("Copy this show link:", url.href);
+      window.prompt(t("Copy this show link:"), url.href);
     }
   }
 }
@@ -625,7 +667,17 @@ function replaceShow(incoming, description) {
   if (
     (show.layers.length || originalAtRisk) &&
     !window.confirm(
-      `${originalAtRisk ? "Replace this shared finale and your saved original" : "Replace the current finale"} with ${description}? Save a show file first if you want to keep both.`,
+      t(
+        "{action} with {description}? Save a show file first if you want to keep both.",
+        {
+          action: t(
+            originalAtRisk
+              ? "Replace this shared finale and your saved original"
+              : "Replace the current finale",
+          ),
+          description: t(description),
+        },
+      ),
     )
   )
     return false;
@@ -648,7 +700,7 @@ function choosePreset(index, play = false) {
   if (!preset) return;
   const next = {
     version: 1,
-    title: preset.name,
+    title: t(preset.name),
     duration: preset.duration,
     layers: preset.types.map(([id, palette]) => createLayer(id, palette)),
   };
@@ -660,7 +712,7 @@ function choosePreset(index, play = false) {
 function renderPresets() {
   $("preset-list").innerHTML = PRESETS.map(
     (p, i) =>
-      `<article class="preset"><div><h3>${p.name}</h3><p>${p.description}</p><div class="preset-icons">${p.types.map(([id]) => pictogram(id)).join("")}</div></div><button data-preset="${i}">LOAD ${p.duration}s SHOW ↗</button></article>`,
+      `<article class="preset"><div><h3>${h(p.name)}</h3><p>${h(p.description)}</p><div class="preset-icons">${p.types.map(([id]) => pictogram(id)).join("")}</div></div><button data-preset="${i}">${h("LOAD {duration}s SHOW ↗", { duration: p.duration })}</button></article>`,
   ).join("");
 }
 function setGentle(value) {
@@ -676,7 +728,7 @@ function setCinema(value) {
   openFinale(false);
   $("fullscreen-toggle").setAttribute(
     "aria-label",
-    value ? "Leave cinema fullscreen" : "Enter cinema fullscreen",
+    t(value ? "Leave cinema fullscreen" : "Enter cinema fullscreen"),
   );
   resize();
   (value ? $("sky") : $("fullscreen-toggle")).focus({ preventScroll: true });
@@ -692,6 +744,7 @@ async function exitCinema() {
   }
 }
 
+renderStaticCopy(getLanguage());
 applyIcons();
 renderBanks();
 renderPad();
@@ -700,7 +753,7 @@ renderPalettes();
 renderFinale();
 renderPresets();
 $("gentle").checked = state.gentle;
-if (sharedMode) $("save-note").textContent = "SHARED SHOW · ORIGINAL KEPT";
+if (sharedMode) setCopy("save-note", "SHARED SHOW · ORIGINAL KEPT");
 on($("banks"), "click", (e) => {
   const b = e.target.closest("[data-bank]");
   if (!b) return;
@@ -792,7 +845,9 @@ on($("layer-list"), "click", (e) => {
   if (a === "remove") {
     if (
       !window.confirm(
-        `Remove the ${EFFECT_BY_ID[show.layers[i].effectId].name} layer from this finale?`,
+        t("Remove the {name} layer from this finale?", {
+          name: t(EFFECT_BY_ID[show.layers[i].effectId].name),
+        }),
       )
     )
       return;
@@ -808,7 +863,7 @@ on($("layer-list"), "click", (e) => {
   renderFinale();
 });
 on($("clear-finale"), "click", () => {
-  if (window.confirm("Clear all layers from this finale?")) {
+  if (window.confirm(t("Clear all layers from this finale?"))) {
     show.layers = [];
     player.stop();
     audio.stop();
@@ -854,7 +909,7 @@ on($("wind"), "input", (e) => {
   engine?.setOptions({ wind: state.wind });
   $("wind-value").textContent =
     state.wind === 0
-      ? "Still"
+      ? t("Still")
       : `${Math.abs(state.wind)} m/s ${state.wind > 0 ? "→" : "←"}`;
 });
 on($("quality"), "change", (e) => {
@@ -916,7 +971,12 @@ on($("import-file"), "change", async (e) => {
     openFinale();
     toast("Show file opened.");
   } catch (error) {
-    toast(error.message);
+    toast(() =>
+      errorCopy(
+        error,
+        "The file could not be read. Choose a valid Afterlight JSON show file.",
+      ),
+    );
   }
 });
 on(document, "keydown", (e) => {
@@ -992,34 +1052,40 @@ on(window, "pageshow", (e) => {
     resumeSoundForVisibility();
   }
 });
-const pwa = setupPWA({
-  onStatus: (s) => {
-    $("pwa-status").textContent =
-      s.message ||
+let pwaSnapshot;
+function renderPWA(s) {
+  pwaSnapshot = s;
+  $("pwa-status").textContent = t(
+    s.message ||
       (s.offlineReady
         ? "Ready offline. Install to keep your own night sky."
-        : "Preparing the offline sky…");
-    $("install-app").textContent = s.installed
+        : "Preparing the offline sky…"),
+  );
+  $("install-app").textContent = t(
+    s.installed
       ? "INSTALLED"
       : s.installable
         ? "INSTALL APP"
-        : "HOW TO INSTALL";
-    $("install-app").disabled = Boolean(s.installed);
-    $("update-app").hidden = !s.updateAvailable;
-  },
-});
+        : "HOW TO INSTALL",
+  );
+  $("install-app").disabled = Boolean(s.installed);
+  $("update-app").hidden = !s.updateAvailable;
+}
+const pwa = setupPWA({ onStatus: renderPWA });
 on($("install-app"), "click", async () => {
   try {
     // The PWA owner retains manual guidance across download-status updates too.
     await pwa.install();
   } catch (error) {
-    toast(error.message);
+    toast(() => errorCopy(error));
   }
 });
 on($("update-app"), "click", async () => {
   if (
     window.confirm(
-      "Update Afterlight now? The sky will restart; your saved finale will stay.",
+      t(
+        "Update Afterlight now? The sky will restart; your saved finale will stay.",
+      ),
     )
   ) {
     player.stop();
@@ -1096,6 +1162,41 @@ window.__afterlight = {
   },
   dispose,
 };
+function renderLanguage() {
+  renderStaticCopy(getLanguage());
+  $("language").value = getLanguage();
+  renderBanks();
+  renderPad();
+  selectEffect(state.selected);
+  renderPalettes();
+  setPalette(state.palette);
+  renderFinale();
+  renderPresets();
+  renderSound();
+  $("pause-toggle").setAttribute(
+    "aria-label",
+    t(state.paused ? "Resume the show" : "Pause the show"),
+  );
+  $("fullscreen-toggle").setAttribute(
+    "aria-label",
+    t(
+      $("app").classList.contains("cinema")
+        ? "Leave cinema fullscreen"
+        : "Enter cinema fullscreen",
+    ),
+  );
+  $("wind-value").textContent =
+    state.wind === 0
+      ? t("Still")
+      : `${Math.abs(state.wind)} m/s ${state.wind > 0 ? "→" : "←"}`;
+  for (const [id, { key, values }] of textCopies)
+    $(id).textContent = t(key, values);
+  if (pwaSnapshot) renderPWA(pwaSnapshot);
+  resize();
+}
+on($("language"), "change", (event) => setLanguage(event.target.value));
+on(window, "afterlight:language", renderLanguage);
+renderLanguage();
 resize();
 initRenderer();
 raf = requestAnimationFrame(frame);

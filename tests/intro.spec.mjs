@@ -24,6 +24,15 @@ for (const viewport of [
     await expect(page.locator("#sky-title")).toHaveCSS("visibility", "hidden");
     await expect(page.locator("#sky-title")).toHaveCSS("opacity", "0");
     await expect(page.locator("#watch-show")).toBeHidden();
+    await expect(page.locator(".portrait-note")).toHaveCount(0);
+    if (viewport.width < 640) {
+      const gap = await page.evaluate(
+        () =>
+          document.querySelector(".deck").getBoundingClientRect().top -
+          document.querySelector(".film").getBoundingClientRect().bottom,
+      );
+      expect(Math.abs(gap)).toBeLessThan(1);
+    }
     await expect(page.locator('[data-fire="chrysanthemum"]')).toBeVisible();
     await expect(page.locator("#finale-open")).toBeVisible();
     expect(await page.evaluate(() => window.__afterlight.state.paused)).toBe(

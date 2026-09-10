@@ -99,10 +99,9 @@ test("static field guide, sound library and licence links work offline at phone 
       if (route === "field-guide.html")
         await expect(page.locator("article")).toHaveCount(40);
       if (route === "sound-library.html") {
-        await expect(page.locator("audio")).toHaveCount(9);
+        await expect(page.locator("audio")).toHaveCount(14);
         const duration = await page
-          .locator("audio")
-          .first()
+          .locator("#original-demonstration audio")
           .evaluate(
             (el) =>
               new Promise((resolve, reject) => {
@@ -121,8 +120,7 @@ test("static field guide, sound library and licence links work offline at phone 
           );
         expect(duration).toBe(24);
         const seek = await page
-          .locator("audio")
-          .first()
+          .locator("#original-demonstration audio")
           .evaluate(
             (el) =>
               new Promise((resolve) => {
