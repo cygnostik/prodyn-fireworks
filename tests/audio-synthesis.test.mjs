@@ -104,7 +104,7 @@ test("salute has a brighter transient than ordinary burst; no automatic whistle"
   );
   assert.equal(
     signatureForEvent({ kind: "comet", effectId: "roman-candle" }),
-    "comet",
+    "launch",
   );
   assert.equal(
     signatureForEvent({ kind: "launch", effectId: "bees" }),

@@ -6,6 +6,12 @@ import {
   SIGNATURES,
   randomGenerator,
 } from "./synthesis.js";
+import { SampleBank, SAMPLE_FILES } from "./samples.js";
+import {
+  synthesizeSizzle,
+  continuousCue,
+  MAX_SIZZLE_VOICES,
+} from "./sizzle.js";
 
 export const MAX_VOICES = 40;
 const SYNTH_RATE = 48000;
@@ -40,12 +46,15 @@ export class FireworksAudio {
     this._requested = Boolean(enabled);
     this._consented = false;
     this._suspended = false;
+    this._runRequested = false;
     this._disposed = false;
     this._context = null;
     this._master = null;
     this._input = null;
     this._graph = [];
     this._buffers = new Map();
+    this._samples = new SampleBank();
+    this._continuous = new Map();
     this._voices = new Map();
     this._recent = new Map();
     this._cooldowns = new Map();
@@ -53,7 +62,10 @@ export class FireworksAudio {
     this._epoch = 0;
     this._serial = 0;
     this._enabling = null;
+    this._enablingEpoch = 0;
     this._rng = randomGenerator(7349);
+    // Keep noise generation separate from the ordinary pitch/gain random stream.
+    this._sizzleRng = randomGenerator(93563);
     this._counts = {
       emitted: 0,
       dropped: 0,
@@ -107,14 +119,17 @@ export class FireworksAudio {
       this._lastError = "Sound needs a user gesture.";
       return false;
     }
-    if (this._enabling) return this._enabling;
+    if (this._enabling && this._enablingEpoch === this._epoch)
+      return this._enabling;
     const Context = globalThis.AudioContext ?? globalThis.webkitAudioContext;
     if (!Context) {
       this._lastError = "Web Audio is unavailable.";
       return false;
     }
     const epoch = ++this._epoch;
+    this._enablingEpoch = epoch;
     this._requested = true;
+    this._runRequested = true;
     let resume;
     try {
       if (!this._context || this._context.state === "closed") {
@@ -138,11 +153,14 @@ export class FireworksAudio {
         }
       return false;
     }
-    this._enabling = (async () => {
+    const context = this._context;
+    const enabling = (async () => {
       try {
         await resume;
         if (this._disposed || epoch !== this._epoch) {
-          if (this._context?.state === "running") await this._context.suspend();
+          // An old result may not suspend a newer valid consent/resume request.
+          if (!this._runRequested && context.state === "running")
+            await context.suspend();
           return false;
         }
         if (this._context.state !== "running") {
@@ -153,16 +171,21 @@ export class FireworksAudio {
         this._enabled = true;
         this._suspended = false;
         this._lastError = null;
+        // Never await fetch/decode in the enabling contract or an event schedule.
+        void this._samples.load(context);
         return true;
       } catch (error) {
-        this._enabled = false;
-        this._lastError = String(error?.message ?? error);
+        if (epoch === this._epoch && !this._disposed) {
+          this._enabled = false;
+          this._lastError = String(error?.message ?? error);
+        }
         return false;
       } finally {
-        this._enabling = null;
+        if (this._enabling === enabling) this._enabling = null;
       }
     })();
-    return this._enabling;
+    this._enabling = enabling;
+    return enabling;
   }
 
   setEnabled(enabled) {
@@ -170,7 +193,9 @@ export class FireworksAudio {
     this._requested = Boolean(enabled);
     if (!enabled) {
       this._enabled = false;
+      this._runRequested = false;
       this._epoch++;
+      this._samples.cancel();
       this.stop();
       // Muting never revives a suspended browser context.
       if (this._context?.state === "running")
@@ -206,6 +231,8 @@ export class FireworksAudio {
   }
 
   _buffer(signature) {
+    if (this._samples.buffers.has(signature))
+      return this._samples.buffers.get(signature);
     if (this._buffers.has(signature)) return this._buffers.get(signature);
     const seed = 1009 + Object.keys(SIGNATURES).indexOf(signature) * 101;
     const pcm = synthesize(signature, { sampleRate: SYNTH_RATE, seed });
@@ -222,6 +249,11 @@ export class FireworksAudio {
   _forgetVoice(voice, stop = false) {
     if (!this._voices.has(voice.id)) return;
     this._voices.delete(voice.id);
+    if (
+      voice.continuousKey &&
+      this._continuous.get(voice.continuousKey) === voice
+    )
+      this._continuous.delete(voice.continuousKey);
     voice.source.onended = null;
     if (stop) {
       try {
@@ -267,7 +299,29 @@ export class FireworksAudio {
       return false;
     }
     const cell = event.position.map((v) => Math.round(v / 8)).join(",");
-    const family = `${event.kind}:${String(event.effectId ?? "")}:${cell}`;
+    const continuous = continuousCue(event);
+    if (continuous?.invalid) {
+      this._counts.dropped++;
+      return false;
+    }
+    if (continuous) {
+      const previous = this._continuous.get(continuous.key);
+      const ageSinceStart = previous ? event.time - previous.simulationTime : 0;
+      // A real renewal is not a second ignition. Legacy events lack identity/age:
+      // recognize only their existing one-shot 3.25s renewal, not arbitrary starts.
+      if (
+        previous &&
+        (continuous.explicit || (ageSinceStart >= 3.25 && ageSinceStart < 3.27))
+      ) {
+        this._counts.throttled++;
+        return {
+          ...previous.schedule,
+          continued: true,
+          simulationTime: event.time,
+        };
+      }
+    }
+    const family = `${event.kind}:${String(event.effectId ?? "")}:${cell}${continuous?.explicit ? `:${continuous.key}` : ""}`;
     const dedupe = `${family}:${event.time}`;
     for (const [key, expiry] of this._recent)
       if (expiry <= now) this._recent.delete(key);
@@ -279,6 +333,16 @@ export class FireworksAudio {
     ) {
       this._counts.throttled++;
       return false;
+    }
+    // Finite per-emitter PCM is uncached and has its own stricter resource cap.
+    if (continuous) {
+      const sizzles = [...this._voices.values()].filter(
+        (voice) => voice.continuousKey,
+      );
+      if (sizzles.length >= MAX_SIZZLE_VOICES) {
+        this._forgetVoice(sizzles.sort((a, b) => a.when - b.when)[0], true);
+        this._counts.stolen++;
+      }
     }
     // Both future-scheduled and sounding sources count toward the same hard cap.
     if (this._voices.size >= MAX_VOICES) {
@@ -294,7 +358,20 @@ export class FireworksAudio {
     }
     let nodes = [];
     try {
-      const buffer = this._buffer(signature);
+      let buffer;
+      if (continuous) {
+        const pcm = synthesizeSizzle(event.effectId, {
+          sampleRate: SYNTH_RATE,
+          seed: Math.floor(this._sizzleRng() * 4294967296),
+          duration: continuous.duration,
+        });
+        buffer = context.createBuffer(
+          1,
+          pcm.channels[0].length,
+          pcm.sampleRate,
+        );
+        buffer.copyToChannel(pcm.channels[0], 0);
+      } else buffer = this._buffer(signature);
       const source = context.createBufferSource();
       nodes.push(source);
       const filter = context.createBiquadFilter();
@@ -305,11 +382,12 @@ export class FireworksAudio {
       nodes.push(gain);
       source.buffer = buffer;
       const power = clamp(event.power, 0.5, 2);
-      const rate = clamp(
+      const variedRate = clamp(
         (0.96 + this._rng() * 0.08) / Math.pow(power, 0.11),
         0.82,
         1.15,
       );
+      const rate = continuous ? 1 : variedRate;
       source.playbackRate.value = rate;
       filter.type = "lowpass";
       filter.frequency.value = spatial.lowpassHz;
@@ -321,13 +399,22 @@ export class FireworksAudio {
       // Keep the emission clock even when a first-use buffer took CPU time.
       const when = Math.max(context.currentTime, now + spatial.delay);
       const id = ++this._serial;
-      const voice = { id, source, nodes, when, priority: PRIORITY[signature] };
+      const voice = {
+        id,
+        source,
+        nodes,
+        when,
+        priority: PRIORITY[signature],
+        continuousKey: continuous?.key,
+        simulationTime: event.time,
+      };
       source.onended = () => {
         this._counts.ended++;
         this._forgetVoice(voice);
       };
       source.start(when);
       this._voices.set(id, voice);
+      if (continuous) this._continuous.set(continuous.key, voice);
       this._recent.set(dedupe, now + 0.25);
       this._cooldowns.set(family, now + (COOLDOWN[event.kind] ?? 0));
       // Bound event metadata even for pathological callers / frozen audio clocks.
@@ -343,6 +430,11 @@ export class FireworksAudio {
       this._lastSchedule = {
         id,
         signature,
+        sample:
+          !continuous && this._samples.buffers.has(signature)
+            ? SAMPLE_FILES[signature]
+            : null,
+        texture: continuous ? `${event.effectId}-sizzle` : null,
         when,
         delay: spatial.delay,
         distance: spatial.distance,
@@ -351,7 +443,9 @@ export class FireworksAudio {
         playbackRate: rate,
         simulationTime: event.time,
         lateBy: Math.max(0, when - (now + spatial.delay)),
+        endsAt: when + buffer.duration / rate,
       };
+      voice.schedule = { ...this._lastSchedule };
       return { ...this._lastSchedule };
     } catch (error) {
       for (const node of nodes) {
@@ -372,12 +466,19 @@ export class FireworksAudio {
       this._forgetVoice(voice, true);
     this._recent.clear();
     this._cooldowns.clear();
+    this._continuous.clear();
+  }
+
+  whenSamplesReady() {
+    return this._samples.whenReady();
   }
 
   async suspend() {
     if (this._disposed) return false;
     this._epoch++;
     this._suspended = true;
+    this._runRequested = false;
+    this._samples.cancel();
     this.stop();
     try {
       if (this._context && this._context.state !== "closed")
@@ -400,13 +501,17 @@ export class FireworksAudio {
     )
       return false;
     const epoch = ++this._epoch;
+    const context = this._context;
+    this._runRequested = true;
     try {
-      await this._context.resume();
+      await context.resume();
       if (epoch !== this._epoch || this._disposed) {
-        if (this._context?.state === "running") await this._context.suspend();
+        if (!this._runRequested && context.state === "running")
+          await context.suspend();
         return false;
       }
       this._suspended = false;
+      void this._samples.load(context);
       return this._context.state === "running";
     } catch (error) {
       this._lastError = String(error?.message ?? error);
@@ -417,9 +522,11 @@ export class FireworksAudio {
   async dispose() {
     if (this._disposed) return;
     this._disposed = true;
+    this._runRequested = false;
     this._enabled = false;
     this._consented = false;
     this._epoch++;
+    this._samples.dispose();
     this.stop();
     for (const node of this._graph) node.disconnect();
     this._graph = [];
@@ -435,6 +542,16 @@ export class FireworksAudio {
   }
 
   getStats() {
+    const samples = this._samples.getStats();
+    const sizzles = [...this._voices.values()].filter(
+      (voice) => voice.continuousKey,
+    );
+    const continuousBytes = sizzles.reduce(
+      (sum, voice) =>
+        sum +
+        voice.source.buffer.length * voice.source.buffer.numberOfChannels * 4,
+      0,
+    );
     return {
       enabled: this._enabled,
       consented: this._consented,
@@ -447,10 +564,14 @@ export class FireworksAudio {
       listener: [...this._listener],
       activeVoices: this._voices.size,
       maxVoices: MAX_VOICES,
-      cachedBuffers: this._buffers.size,
+      cachedBuffers: this._buffers.size + samples.ready,
+      samples,
+      continuousVoices: sizzles.length,
+      maxContinuousVoices: MAX_SIZZLE_VOICES,
+      continuousBytes,
       bufferBytes: [...this._buffers.values()].reduce(
         (n, b) => n + b.length * b.numberOfChannels * 4,
-        0,
+        samples.bytes + continuousBytes,
       ),
       ...this._counts,
       lastSchedule: this._lastSchedule ? { ...this._lastSchedule } : null,

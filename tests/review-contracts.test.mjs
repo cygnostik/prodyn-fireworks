@@ -90,6 +90,9 @@ for (const reason of ["hidden", "disposed", "cancel"])
         this.enabled = v;
       },
       stop() {},
+      async suspend() {
+        this.enabled = false;
+      },
     };
     const node = {
       setAttribute() {},
@@ -99,7 +102,7 @@ for (const reason of ["hidden", "disposed", "cancel"])
       textContent: "",
     };
     const context = vm.createContext({
-      state: { sound: false },
+      state: { sound: false, soundPreferred: false },
       audio,
       disposed: false,
       document: { hidden: false },
@@ -108,13 +111,13 @@ for (const reason of ["hidden", "disposed", "cancel"])
       toast() {},
     });
     vm.runInContext(
-      `let soundRequest=0,soundPending=false;${source.slice(start, end)};globalThis.controls={toggleSound,muteForVisibility};`,
+      `let soundRequest=0,soundPending=false,pageSuspended=false;${source.slice(start, end)};globalThis.controls={toggleSound,suspendSoundForVisibility};`,
       context,
     );
     const pending = context.controls.toggleSound();
     if (reason === "hidden") {
       context.document.hidden = true;
-      context.controls.muteForVisibility();
+      context.controls.suspendSoundForVisibility();
     }
     if (reason === "disposed") context.disposed = true;
     if (reason === "cancel") context.controls.toggleSound();

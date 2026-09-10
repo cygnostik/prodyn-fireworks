@@ -236,6 +236,67 @@ test("mute while enable is awaiting browser resume wins over stale completion", 
   }
 });
 
+test("a new consent gesture after mute is not hijacked by the previous enable promise", async () => {
+  const previous = FakeContext.prototype.resume;
+  const finishes = [];
+  FakeContext.prototype.resume = function () {
+    this.state = "running";
+    return new Promise((resolve) => finishes.push(resolve));
+  };
+  const engine = new FireworksAudio();
+  try {
+    const oldEnable = engine.enable();
+    engine.setEnabled(false);
+    const newEnable = engine.enable();
+    assert.equal(
+      finishes.length,
+      2,
+      "the fresh gesture must issue its own resume",
+    );
+    finishes[1]();
+    assert.equal(await newEnable, true);
+    finishes[0]();
+    assert.equal(await oldEnable, false);
+    assert.equal(engine.getStats().enabled, true);
+    assert.equal(engine.getStats().contextState, "running");
+  } finally {
+    finishes.forEach((finish) => finish());
+    await engine.dispose();
+    FakeContext.prototype.resume = previous;
+  }
+});
+
+test("an old resume completion cannot suspend a newer pending resume", async () => {
+  const engine = new FireworksAudio();
+  await engine.enable();
+  await engine.suspend();
+  const previous = FakeContext.prototype.resume;
+  const finishes = [];
+  FakeContext.prototype.resume = function () {
+    this.state = "running";
+    return new Promise((resolve) => finishes.push(resolve));
+  };
+  try {
+    const oldResume = engine.resume();
+    await engine.suspend();
+    const newResume = engine.resume();
+    finishes[0]();
+    assert.equal(await oldResume, false);
+    assert.equal(
+      engine.getStats().contextState,
+      "running",
+      "stale result must not suspend the new in-flight continuation",
+    );
+    finishes[1]();
+    assert.equal(await newResume, true);
+    assert.equal(engine.getStats().suspended, false);
+  } finally {
+    finishes.forEach((finish) => finish());
+    await engine.dispose();
+    FakeContext.prototype.resume = previous;
+  }
+});
+
 test("missing and rejected Web Audio are honest false results", async () => {
   delete globalThis.AudioContext;
   try {

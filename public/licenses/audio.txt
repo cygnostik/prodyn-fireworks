@@ -3,13 +3,20 @@ MIT License
 Copyright (c) 2026 Afterlight contributors
 
 This license applies to the original audio implementation in src/audio/, the
-original renderer scripts/render-audio.mjs, the audio tests, and every synthesized
-WAV file and manifest in public/audio/. All audio was generated from original
-algorithms (noise, envelopes, oscillators, grains and authored reflection taps).
-No field recordings, commercial sample libraries, third-party impulse responses,
-voice recordings or third-party musical works were sampled or incorporated.
-Research quotations in docs/audio.md and evidence/audio-* retain their respective
-source rights; they are citations, not licensed audio or a claim of ownership.
+original renderer scripts/render-audio.mjs, the audio tests, and the synthesized
+WAV files and their manifest.json in public/audio/. Those original sounds are
+generated from algorithms (noise, envelopes, oscillators, grains and authored
+reflection taps), including the finite, non-looping sizzle textures.
+
+The three imported recordings lift1.mp3, burst1.mp3 and crackle-sm-1.mp3 are
+NOT covered by this MIT notice. Their recording authorship and redistribution
+clearance remain unresolved. See public/audio/recordings.json and
+public/audio/NOTICE-recordings.txt for observed sources and rights status.
+The simulator engine's software licence is not being asserted as a
+recording-specific reuse grant.
+
+Research quotations retain their respective source rights; citations are not
+licensed audio or a claim of ownership.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -49,23 +49,55 @@ test("Guatemala selection reaches launches and saved layers; Signature varies an
   expect(fixed[0]).toEqual(fixed[1]);
 });
 
+test("ordinary automatic placements spread across the visible sky in every view", async ({
+  page,
+}) => {
+  await ready(page);
+  for (const view of ["audience", "close", "wide"]) {
+    await page.locator("#settings-open").click();
+    await page.locator("#view").selectOption(view);
+    await page.locator("#settings [data-close-dialog]").click();
+    const placements = await page.evaluate(() => {
+      const a = window.__afterlight;
+      return Array.from({ length: 32 }, () => {
+        a.clear();
+        a.fire({ effectId: "peony", seed: 17 });
+        return a.stats().engine.lastLaunch;
+      });
+    });
+    const xs = placements.map((p) => p.ndc[0]);
+    expect((Math.max(...xs) - Math.min(...xs)) / 2, view).toBeGreaterThan(0.7);
+    expect(Math.max(...xs), view).toBeLessThanOrEqual(0.801);
+    expect(Math.min(...xs), view).toBeGreaterThanOrEqual(-0.801);
+    expect(
+      placements.every((p) => p.position >= -0.92 && p.position <= 0.92),
+    ).toBe(true);
+  }
+});
+
 test("Wide view gives actual sky taps more lateral room while preserving 16:9", async ({
   page,
 }) => {
   await ready(page);
-  expect(
-    await page.evaluate(
-      () => window.__afterlight.stats().engine.launchHalfWidth,
-    ),
-  ).toBe(220);
+  const expectVisibleField = async () => {
+    const edges = await page.evaluate(() => {
+      const a = window.__afterlight;
+      return [-1, 1].map((position) => {
+        a.clear();
+        a.fire({ effectId: "peony", seed: 17, position });
+        return a.stats().engine.lastLaunch.ndc[0];
+      });
+    });
+    expect((edges[1] - edges[0]) / 2).toBeGreaterThanOrEqual(0.72);
+    expect(edges[0]).toBeGreaterThanOrEqual(-0.801);
+    expect(edges[1]).toBeLessThanOrEqual(0.801);
+    await page.evaluate(() => window.__afterlight.clear());
+  };
+  await expectVisibleField();
   await page.locator("#settings-open").click();
   await page.locator("#view").selectOption("wide");
   await page.locator("#settings [data-close-dialog]").click();
-  expect(
-    await page.evaluate(
-      () => window.__afterlight.stats().engine.launchHalfWidth,
-    ),
-  ).toBe(310);
+  await expectVisibleField();
   const sky = page.locator("#sky");
   await sky.scrollIntoViewIfNeeded();
   const rectangle = await sky.boundingBox();
@@ -78,6 +110,7 @@ test("Wide view gives actual sky taps more lateral room while preserving 16:9", 
   const shot = await page.evaluate(
     () => window.__afterlight.stats().engine.lastLaunch,
   );
-  expect(shot.x).toBeGreaterThan(200);
+  expect(shot.ndc[0]).toBeGreaterThan(0.6);
+  expect(shot.ndc[0]).toBeLessThan(0.7);
   expect(shot.z).toBe(-125);
 });

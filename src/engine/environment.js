@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Reflector } from "three/addons/objects/Reflector.js";
 import { seededRandom } from "./simulation.js";
+import { MeteorField, MeteorRenderer } from "./meteors.js";
 
 export const NOISE = /* glsl */ `
 float hash21(vec2 p) { p=fract(p*vec2(123.34,345.45));p+=dot(p,p+34.345);return fract(p.x*p.y); }
@@ -88,6 +89,8 @@ export function createEnvironment(scene, { reflectionSize = 1024 } = {}) {
     ),
   );
   sky.renderOrder = -100;
+  const meteors = new MeteorField();
+  const meteorRenderer = new MeteorRenderer(scene);
   const rng = seededRandom(0xaf7e211),
     ridge = (x, layer) => {
       const s = x * 0.0027 + layer * 5;
@@ -238,10 +241,20 @@ export function createEnvironment(scene, { reflectionSize = 1024 } = {}) {
   return {
     sky,
     water,
+    getMeteorStats() {
+      return { ...meteors.getStats(), rendered: meteorRenderer.rendered };
+    },
+    reset() {
+      meteors.reset();
+      meteorRenderer.sync(meteors);
+    },
     update(time, reducedMotion) {
       const t = reducedMotion ? 0 : time;
       sky.material.uniforms.uTime.value = t;
       water.material.uniforms.uTime.value = t;
+      // Use the original simulation time, not t=0 from the static atmosphere.
+      meteors.update(time, reducedMotion);
+      meteorRenderer.sync(meteors);
     },
     reflections(enabled) {
       water.material.uniforms.uReflections.value = enabled ? 1 : 0;
@@ -251,6 +264,7 @@ export function createEnvironment(scene, { reflectionSize = 1024 } = {}) {
       water.material.uniforms.uTexel.value.set(1 / w, 1 / h);
     },
     dispose() {
+      meteorRenderer.dispose();
       for (const object of owned) {
         scene.remove(object);
         object.geometry.dispose();

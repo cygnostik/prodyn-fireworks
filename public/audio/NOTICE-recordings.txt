@@ -1,0 +1,18 @@
+IMPORTED AUDIO RECORDINGS — RIGHTS UNVERIFIED
+
+Applies only to: crackle-sm-1.mp3, lift1.mp3, burst1.mp3.
+
+Source files retained unchanged from:
+https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/
+
+These URLs appear in the Pyrolab HD fireworks sound manager. Its engine is
+credited to Caleb Miller (Firework Simulator v2). Recording author/owner and
+audio-specific redistribution permission have not been independently established.
+Engine credit is not a recording-author attribution.
+
+The MIT licence for AFTERLIGHT code and its original synthesized WAV pack does
+NOT establish a licence for these imported MP3s. Their inclusion in this release
+does not grant permission to reuse or redistribute them. Do not mark them MIT.
+This notice grants no recording rights.
+
+See recordings.json for exact source URLs, sizes, retrieval times and attribution.

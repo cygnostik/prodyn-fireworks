@@ -12,13 +12,13 @@ ROOT_FILES = [
 ]
 DOC_FILES = [
     'docs/audio.md', 'docs/renderer.md', 'docs/design.md', 'docs/deployment.md',
-    'docs/pwa.md', 'docs/research/fireworks.md', 'docs/research/field-guide-data.json',
+    'docs/pwa.md', 'docs/sky.md', 'docs/research/fireworks.md', 'docs/research/field-guide-data.json',
 ]
 TREES = {
     'src': {'.js', '.mjs', '.css'},
     'scripts': {'.js', '.mjs', '.py'},
     'tests': {'.js', '.mjs'},
-    'public': {'.html', '.css', '.js', '.mjs', '.json', '.webmanifest', '.txt', '.svg', '.png', '.jpg', '.woff2', '.wav'},
+    'public': {'.html', '.css', '.js', '.mjs', '.json', '.webmanifest', '.txt', '.svg', '.png', '.jpg', '.woff2', '.wav', '.mp3'},
 }
 SITE_EXTENSIONS = TREES['public']
 
@@ -88,7 +88,8 @@ A 3D fireworks instrument with 40 effects, a layered Finale composer and offline
 
 - **site/** — finished website. Upload its contents to your web root.
 - **source/** — editable application, tests, build tools, original sound-generation source and research guide.
-- **LICENSE** — application MIT licence. Font and dependency notices are also included under `site/licenses/` and `source/public/licenses/`.
+- **LICENSE** — application MIT licence. Font and dependency notices are included under `site/licenses/` and `source/public/licenses/`.
+- **Imported recordings** — three MP3s are NOT covered by the application MIT licence. Recording-specific rights remain UNVERIFIED; see `site/audio/NOTICE-recordings.txt` and `source/public/audio/recordings.json`. Their inclusion is not a redistribution licence.
 
 ## Open locally
 

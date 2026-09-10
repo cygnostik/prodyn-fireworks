@@ -14,7 +14,7 @@ test(
   { skip: !enabled, timeout: 60000 },
   async () => {
     const { chromium } = await import("playwright");
-    const temp = new URL("evidence/audio-browser-temp/", root);
+    const temp = new URL("evidence/audio-revision/browser-temp/", root);
     await mkdir(temp, { recursive: true });
     const oldTemp = process.env.TMPDIR;
     process.env.TMPDIR = fileURLToPath(temp);
@@ -25,9 +25,18 @@ test(
       const modules = {
         "/audio.js": "src/audio/audio.js",
         "/synthesis.js": "src/audio/synthesis.js",
+        "/samples.js": "src/audio/samples.js",
+        "/sizzle.js": "src/audio/sizzle.js",
+        "/audio/lift1.mp3": "public/audio/lift1.mp3",
+        "/audio/burst1.mp3": "public/audio/burst1.mp3",
+        "/audio/crackle-sm-1.mp3": "public/audio/crackle-sm-1.mp3",
       };
       if (modules[req.url]) {
-        res.writeHead(200, { "Content-Type": "text/javascript" });
+        res.writeHead(200, {
+          "Content-Type": req.url.endsWith(".mp3")
+            ? "audio/mpeg"
+            : "text/javascript",
+        });
         res.end(await readFile(new URL(modules[req.url], root)));
       } else if (req.url === "/") {
         res.writeHead(200, { "Content-Type": "text/html" });
@@ -76,6 +85,7 @@ test(
       );
       await page.click("#enable");
       await page.waitForFunction(() => window.result === true);
+      assert.equal(await page.evaluate(() => audio.whenSamplesReady()), true);
       const runtime = await page.evaluate(() => {
         audio.setListener([0, 0, 0]);
         const now = audio._context.currentTime;
@@ -242,7 +252,7 @@ test(
           "Chromium only. Offline rendering verifies samples, not perceived realism, hardware latency, Safari/iOS, speaker output, or bfcache.",
       };
       await writeFile(
-        new URL("evidence/audio-browser.json", root),
+        new URL("evidence/audio-revision/legacy-browser.json", root),
         JSON.stringify(report, null, 2) + "\n",
       );
       console.log(

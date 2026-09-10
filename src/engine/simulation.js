@@ -238,8 +238,9 @@ export class FireworkSimulation {
       droppedParticles: 0,
     };
   }
-  emit(kind, effectId, x, y, z, power = 1) {
+  emit(kind, effectId, x, y, z, power = 1, detail = {}) {
     this.onEvent({
+      ...detail,
       kind,
       effectId,
       position: [x, y, z],
@@ -256,15 +257,18 @@ export class FireworkSimulation {
       this.sparks.count
     );
   }
-  launch({
-    effectId = "chrysanthemum",
-    palette = "signature",
-    position = 0,
-    scale = 1,
-    seed,
-    loft = 1,
-    variation,
-  } = {}) {
+  launch(
+    {
+      effectId = "chrysanthemum",
+      palette = "signature",
+      position = 0,
+      scale = 1,
+      seed,
+      loft = 1,
+      variation,
+    } = {},
+    resolveLaunchX,
+  ) {
     if (!EFFECT_IDS.includes(effectId))
       return { ok: false, reason: "unknown-effect", effectId };
     if (
@@ -315,6 +319,14 @@ export class FireworkSimulation {
     this.metrics.launched++;
     if (effectId === "wheel") s.y = 26;
     if (effectId === "set-piece") s.y = 34 * scale;
+    // The renderer may place this accepted shot in its current visible field.
+    // Direct simulation callers retain position * launchHalfWidth unchanged.
+    if (resolveLaunchX)
+      s.x = number(
+        resolveLaunchX(position, s, !EMITTER_DURATIONS[effectId]),
+        s.x,
+      );
+    s.lastX = s.x;
     s.lastY = s.y;
     this.lastLaunch = {
       id: this.metrics.launched,
@@ -334,6 +346,7 @@ export class FireworkSimulation {
     if (EMITTER_DURATIONS[effectId]) {
       this.emitters.push({
         ...s,
+        soundId: this.metrics.launched,
         duration: EMITTER_DURATIONS[effectId],
         clock: 0,
         shot: 0,
@@ -349,6 +362,11 @@ export class FireworkSimulation {
           effectId === "waterfall" ? 103 : s.y,
           s.z,
           effectId === "set-piece" ? 0.5 : scale,
+          {
+            emitterId: this.metrics.launched,
+            emitterAge: 0,
+            emitterDuration: EMITTER_DURATIONS[effectId],
+          },
         );
     } else {
       if (effectId === "comet") {
@@ -1095,6 +1113,11 @@ export class FireworkSimulation {
         id === "waterfall" ? 103 : e.y,
         e.z,
         e.scale,
+        {
+          emitterId: e.soundId,
+          emitterAge: e.age,
+          emitterDuration: e.duration,
+        },
       );
     }
     if (id === "set-piece") {

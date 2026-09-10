@@ -1,12 +1,16 @@
 # AFTERLIGHT audio
 
-Original, MIT-licensed procedural fireworks audio. The engine synthesizes sound locally, without sampled recordings, third-party impulse responses, microphone access or audio fetches. The WAV pack is a reusable offline export of the same synthesis, not a runtime dependency.
+The app uses three imported MP3 recordings for lifts, ordinary bursts and crackle, plus original procedural audio for other families. Fountain and waterfall have fresh finite sizzle textures rather than replaying the old short sound. The original synthesized WAV pack is retained unchanged as an export/fallback reference.
+
+**Imported audio rights are UNVERIFIED; inclusion in this release grants no recording rights.** The code and original synthesized WAVs are MIT-licensed; that grant does not establish rights to `lift1.mp3`, `burst1.mp3`, or `crackle-sm-1.mp3`. See [`public/audio/recordings.json`](../public/audio/recordings.json) and [`NOTICE-recordings.txt`](../public/audio/NOTICE-recordings.txt). Recording authorship and redistribution permission remain unresolved; attribution to an engine author is not recording ownership.
 
 Acoustic cues are researched; numerical synthesis settings are authored. **No human listening test was performed.** This is a stylized perceptual model, not calibrated blast acoustics or a speaker-safety guarantee.
 
 ## Integration API
 
-Use the application lifecycle in [`src/main.js`](../src/main.js) for sound-button wiring: `toggleSound()`, `muteForVisibility()` and `dispose()` coordinate pending requests, visibility, cancellation and teardown. `enable()` must start directly in a trusted click/key handler. After it resolves, the application checks that the request is still current, the page is visible and the app is not disposed before updating sound state. A late result must not undo a newer mute or enable request. Engine-level cancellation does not replace this application guard.
+The application in [`src/main.js`](../src/main.js) owns the sound preference and visibility policy. It stores `soundPreferred` at `afterlight:sound:v1`. Hiding/pagehide calls `suspend()` without clearing consent or preference; visible/pageshow/focus may call `resume()` on this already-consented, enabled context. Explicit mute calls `setEnabled(false)` and blocks restoration. Disposal cancels audio but preserves the saved preference.
+
+A fresh page still constructs no AudioContext automatically. If sound was previously preferred, the first trusted pointer interaction or meaningful key invokes `enable()`; the sound button is excluded from this restoration path to avoid a double toggle. `enable()` starts directly in the gesture stack. The app must check request identity, visibility and disposal after asynchronous completion. An old enable/resume or sample decode cannot override a newer mute, suspend or enable request.
 
 ```js
 import { FireworksAudio } from './audio/audio.js';
@@ -35,9 +39,9 @@ audio.setEnabled(false);
 audio.stop();
 // On tab hide or pause, if the app owns this lifecycle:
 await audio.suspend();
-// Explicit user continuation ONLY, after prior sound opt-in:
+// On visible/pageshow/focus: restore only the already-consented enabled context.
 await audio.resume();
-// Prefer another enable() gesture after tab restoration if sound is uncertain.
+// Fresh reload / explicit mute still requires enable() in a trusted gesture.
 // On teardown:
 await audio.dispose();
 ```
@@ -45,39 +49,60 @@ await audio.dispose();
 | Method | Contract |
 | --- | --- |
 | `constructor({volume=0.6, enabled=false}={})` | Allocates no context and plays nothing. Even `enabled:true` cannot confer gesture consent. |
-| `enable(): Promise<boolean>` | Create/resume the owned context under a gesture. Returns false if blocked, unavailable, superseded, or disposed; exposes `lastError`. |
+| `enable(): Promise<boolean>` | Create/resume the owned context under a gesture. Returns false if blocked, unavailable, superseded, or disposed; exposes `lastError`. Starts local sample loading after successful consent, but does not wait for downloads or decoding. |
 | `setEnabled(boolean)` | False cancels all voices and suspends the context. True alone never creates, resumes, or re-enables audio; call `enable()`. |
 | `setVolume(0..1)` | Clamp finite values; reject nonfinite input. Smooth a live gain change. Volume zero drops new events rather than keeping inaudible voices. |
 | `setListener([x,y,z])` | Three finite world-meter coordinates, default `[0,70,400]`; returns false for invalid input. |
 | `emit(event)` | Returns schedule metadata or false. `kind` is `launch`, `burst`, `crackle`, `whistle`, `fountain`, or `comet`; finite `power` clamps to 0.5–2; `time` must be finite simulation seconds. |
 | `stop()` | Cancel all scheduled/active voices and clear event cooldowns, preserving enabled state and reusable buffers. |
 | `suspend(): Promise<boolean>` | Stop voices and suspend the owned context; remember prior opt-in, never install a visibility listener. |
-| `resume(): Promise<boolean>` | Explicit caller action only. Refuses without previous successful opt-in, after mute, or after disposal. No missed sounds are replayed. |
+| `resume(): Promise<boolean>` | Caller-owned continuation, including visible/pageshow/focus. Refuses without previous successful opt-in, after mute, or after disposal. No missed sounds are replayed. |
+| `whenSamplesReady(): Promise<boolean>` | Optional diagnostic await for the current three-sample load. False on incomplete, cancelled or failed loading. It never enables audio or schedules/replays events. |
 | `dispose(): Promise<void>` | Idempotently stop/disconnect sources and graph, clear buffers, close only this engine's context. Cannot be re-enabled. |
-| `getStats()` | Copies of enabled/consented/suspended/disposed state, listener, context/synthesis rates, volume, voice/buffer counts, buffer bytes, emitted/dropped/throttled/stolen/ended/high-water counters, last schedule and error. |
+| `getStats()` | Copies of lifecycle state, voice/buffer counters, last schedule/error, plus per-sample `state`/`errors`, ready count/bytes, and continuous voice/PCM bounds. `bufferBytes` includes decoded recordings, cached synthesis, and active finite sizzle buffers. |
 
-`emit()` schedule metadata includes `id`, `signature`, `when`, `delay`, `distance`, `gain`, `pan`, `playbackRate`, `simulationTime`, and `lateBy` (seconds). The engine uses `AudioContext.currentTime` captured **at emission**, plus Euclidean distance divided by 343 m/s. It does **not** interpret simulation time as the AudioContext epoch. Speed 343 m/s is the authored still-air approximation for about 20 °C, consistent with the textbook value.[4]
+`emit()` schedule metadata includes `id`, `signature`, `when`, `delay`, `distance`, `gain`, `pan`, `playbackRate`, `simulationTime`, `lateBy`, and `endsAt` (seconds). `sample` identifies the selected MP3 or is null for synthesis; `texture` identifies a continuous sizzle. The engine uses `AudioContext.currentTime` captured **at emission**, plus Euclidean distance divided by 343 m/s. It does **not** interpret simulation time as the AudioContext epoch. Speed 343 m/s is the authored still-air approximation for about 20 °C, consistent with the textbook value.[4]
 
 The source's actual start is `max(currentTime after buffer creation, emissionTime + delay)`. A first-use cold synthesis at very short distance can therefore be late; `lateBy` reports it instead of scheduling into the past. Cached subsequent sounds do not regenerate PCM. The compressor/device can add further latency: this is not a sample-perfect audiovisual output-latency calibration. Listener motion after an event has been emitted does not retime that sound; the position is sampled at emission. Panning assumes a listener facing -Z, not an arbitrary camera rotation. Delays beyond 30 seconds are rejected as an authored resource bound.
 
 ### Discrete type rules
 
-- `burst` selects the core report/body/tail. `salute`, `white-salute`, `white_salute`, `whiteSalute`, and `maroon` report IDs select the hotter salute signature. A launch is still only a launch, including a salute's launch.
-- Ordinary bursts contain a **faint air/sizzle component**, not automatic crackles or a whistle. `crackle` is its own later event, issued when stars crackle; the demonstration separates it from the first core burst by an authored interval.
+- Ordinary `burst` selects local `burst1.mp3`, including the initial crossette burst. `salute`, `white-salute`, `white_salute`, `whiteSalute`, and `maroon` report IDs keep the original salute synthesis. A launch is still only a launch, including a salute's launch.
+- Every `crackle` event selects local `crackle-sm-1.mp3`. The simulation already emits distinct, later `crackle` events for crossette splits and crackling stars; no extra event, delay, or initial-burst substitution is added.
 - Only an explicit `whistle` event produces the tonal whistle. Bees/tourbillon/etc. do not whistle merely because of their visual name; the simulation decides which event is appropriate.
-- `comet` is a light lift/air trail with no large burst. A Roman-candle shot should emit `comet`/`launch`, not an invented `burst` event. A fountain should emit `fountain`, not pretend to be an aerial shell.
-- `fountain` is a sustained noise spray with sparse small grains, not a bass report. Its hiss is an authored treatment, not a claim that all fountains make the same sound.
+- Every `launch` event selects `lift1.mp3`. Roman-candle shots already emit `kind: 'comet', effectId: 'roman-candle'`; that exact combination now selects the same lift. Ordinary comet events retain their original synthesis. Roman-candle cadence is unchanged.
+- Fountain and waterfall `fountain` events select the finite continuous treatment described below. Wheel and set-piece, which also use the `fountain` event kind, retain the original synthesis. Whistle, salute and ordinary comet timbres are unchanged.
 - Same-family/source-cell launch events have a 75 ms cooldown; comet 120 ms; crackle 45 ms; whistle 1.6 s; fountain 3.2 s. These guards suppress repeated frame notifications; they do not replace correct discrete simulation events. Cells are 8 m, and event-time duplicates are suppressed briefly. This may intentionally merge very close simultaneous sources with identical IDs/times.
 
 ### Bounded mix
 
-Each voice owns a cached-buffer source, low-pass filter, stereo panner, and gain. Pitch and gain vary deterministically across the event sequence; power also shifts pitch slightly. The distance gain and low-pass curves are **mix choices**, not measured atmospheric absorption, inverse-square SPL calibration, obstruction, terrain, weather, Doppler, or reverberation simulation.
+Each voice owns a buffer source, low-pass filter, stereo panner, and gain. Ordinary pitch and gain vary deterministically across the event sequence; power also shifts pitch slightly. Continuous sources use rate 1 so pitch variation cannot move their endpoint. The distance gain and low-pass curves are **mix choices**, not measured atmospheric absorption, inverse-square SPL calibration, obstruction, terrain, weather, Doppler, or reverberation simulation.
 
-The bus is `gain → compressor → bounded WaveShaper → master volume → destination`. The live cap is **40 voices**, including sources waiting for propagation delay. A higher-priority report can replace an older/lower-priority voice. A lower-priority new event is dropped when the cap is occupied by stronger events. There is no persistent oscillator, animation loop, global audio singleton, timer scheduler, network request, or hidden playback listener. PCM and the mix have digital headroom; this does not establish safe real-world loudspeaker/headphone exposure.
+The bus is `gain → compressor → bounded WaveShaper → master volume → destination`. The live cap remains **40 voices**, including propagation-delayed sources. Continuous sources have an additional **8-voice** cap. A higher-priority report can replace an older/lower-priority voice. There is no persistent oscillator, audio animation loop, worklet, large audio library, global audio singleton or engine-owned visibility listener. A sample-loading timeout bounds I/O; it is not an audio event scheduler. PCM and the mix have digital headroom; this does not establish safe real-world loudspeaker/headphone exposure.
+
+## Local recordings and loading
+
+The three original MP3 files total **85,252 bytes**. At the tested Edge 48 kHz context, native decoded durations are 0.459354 s (lift), 1.409188 s (burst), and 1.471938 s (small crackle); all decode as stereo. Native decoder/resampling rounding accounts for the lift's slight difference from ffprobe's original 44.1 kHz duration. Files are retained without trimming, transcoding or inserted leading silence.
+
+Only a successful consent activation starts fetching. Paths resolve as `BASE_URL + 'audio/<filename>'` against the page document, so a relative-base build under a nested directory does not request the origin root or an external host. The PWA build includes the three bundled MP3s in its inventory; runtime fetches never use the source CodePen URLs. Already-decoded buffers play offline without another request. A fresh offline installation still requires its assets to have been cached.
+
+Fetch/decode runs independently of `enable()` and `emit()`. While loading or after failure, the original synthesis plays immediately at the existing event schedule. A completed decode affects only future events; it never replaces or replays an earlier cue. Missing/corrupt files expose per-sample fallback errors, without blocking the other samples. The load has a five-second deadline, a 1 MiB encoded-file limit and a ten-second decoded-duration limit. Failed samples may retry on a later enable/resume, never from each emitted event.
+
+Mute, suspend and disposal abort pending I/O. Generation guards reject late native decoder results, which cannot otherwise be cancelled by Web Audio. Loaded buffers may be reused after consented restoration; disposal frees them. `whenSamplesReady()` is useful for diagnostics, not required for the application's sound-toggle state.
+
+## Fountain and waterfall continuity
+
+Actual simulation traces emit once at effect start and renew once when age reaches 3.25 seconds (3.258333 s in the captured fixed-step trace). Fountain emits particles for 6.5 seconds; waterfall for 6 seconds. Previously both reused a cached 3.6-second waveform with a fresh attack on renewal. Its sustained noise had sine-amplitude components at 2.116761 and 6.222958 Hz, in addition to the repeated noise/grain pattern. There was no literal `BufferSource.loop`; the repeated cue and periodic waveform caused the loop-like result.
+
+`src/audio/sizzle.js` generates a new finite mono filtered-noise bed for each burn. Quiet smooth random drift replaces the periodic modulators, with one 60 ms onset and a 220 ms release **inside** the effect duration. A renewal of a live emitter does not create a new source or attack and returns `continued: true` with the original schedule. No extra propagation or event delays are added. Each normal full-duration source uses 1,248,000 bytes (fountain) or 1,152,000 bytes (waterfall) at 48 kHz; buffers are uncached and released on natural completion, stealing, stop, mute or disposal.
+
+For exact overlapping-source and mid-effect handling, emitter events accept `emitterId`, `emitterAge`, and `emitterDuration`. A renewal received after a missed initial cue renders only `emitterDuration - emitterAge`, not another full burn. Emitter identity prevents a new source at the same location from being mistaken for a renewal. The audio layer retains a legacy single-source fallback, using known durations and the existing 3.25-second renewal interval; unannotated coincident sources or a missed initial cue cannot be distinguished perfectly. The simulation supplies that emitter metadata without changing cue timing.
+
+Measured 10 ms RMS-envelope line amplitudes, relative to mean envelope, fell from 24.08% / 14.27% at the two old modulation frequencies to 0.23% / 0.067% for fountain and 0.30% / 0.112% for waterfall (seed 7349). Raw RMS is 0.0580 / 0.0499; source peaks 0.1699 / 0.1455. Browser renders stay continuous through renewal, are silent before arrival and after their finite end, and release their buffers. These are signal and scheduling measurements, not a human listening assessment.
 
 ## Original synthesis and reusable exports
 
-`src/audio/synthesis.js` is pure ESM with no DOM, Web Audio, Node, or third-party dependencies:
+`src/audio/synthesis.js` remains pure ESM with no DOM, Web Audio, Node, or third-party dependencies. Its waveforms and original WAV exports are unchanged; the only routing change there is Roman-candle `comet` events selecting `launch`:
 
 - `synthesize(signature, {sampleRate=48000, seed=1009, layers}={})` returns `{signature, seed, sampleRate, duration, channels: Float32Array[], layers, markers}`. Rates: integer 16000–96000. Optional `layers` isolates the authored stems; each output has its own safety trim.
 - `SIGNATURES`, `SYNTHESIS_VERSION`, and `SPEED_OF_SOUND` expose the contract.
@@ -105,7 +130,7 @@ All nine WAVs are stereo 48 kHz, signed 16-bit little-endian PCM. [`public/audio
 
 Reproducibility: the pack test regenerates each signature's seed and compares the bytes directly in Node. Floating-point transcendental functions are not promised bit-identical across all JS implementations.
 
-License: [`public/licenses/audio.txt`](../public/licenses/audio.txt) contains the MIT permission grant for original source and generated audio. Include that notice when redistributing the pack. Cited prose and retrieved publisher text retain their respective source rights and are **not** an audio sample license. No recordings from the commercial sources below were obtained or used.
+License: [`public/licenses/audio.txt`](../public/licenses/audio.txt) contains the MIT permission grant for the original source and generated WAV pack. That original notice does not license the three imported MP3s; `recordings.json` and `NOTICE-recordings.txt` record their unresolved rights separately. Cited prose and retrieved publisher text retain their respective source rights and are **not** an audio sample license. No recordings from the commercial acoustic-reference sources below were obtained or used.
 
 ## Atomic acoustic claims and their limits
 
@@ -132,16 +157,17 @@ The echo-study claim is based on its published abstract, and the hiss/sizzle cla
 From the repository root, use Node 22.12 or newer and install the locked dependencies with `npm ci`. The synthesis, engine and pack checks run without a browser:
 
 ```sh
-node --test tests/audio-synthesis.test.mjs tests/audio-engine.test.mjs tests/audio-pack.test.mjs
+node --test tests/audio-synthesis.test.mjs tests/audio-engine.test.mjs tests/audio-pack.test.mjs tests/audio-revision.test.mjs tests/audio-samples.test.mjs
 ```
 
 For the optional Web Audio test, install Playwright Chromium with `npx playwright install chromium`, or set `AUDIO_CHROMIUM_PATH` to an existing compatible executable:
 
 ```sh
 AUDIO_BROWSER_TEST=1 node --test tests/audio-browser.test.mjs
+npx playwright test tests/audio-samples.spec.mjs tests/audio-samples-bundle.spec.mjs
 ```
 
-The optional test skips during `npm test` unless `AUDIO_BROWSER_TEST=1` is set. It starts an isolated loopback fixture and closes the browser/server afterward. It exercises trusted-click opt-in, live scheduling, the production mix through `OfflineAudioContext`, voice bounds and cancellation. The app's sound UI and visibility behavior are exercised separately by `npm run test:browser`; deferred-enable cancellation is covered by `tests/review-contracts.test.mjs`.
+The optional Node browser test skips during `npm test` unless `AUDIO_BROWSER_TEST=1` is set. It exercises trusted-click opt-in, live scheduling, the production mix through `OfflineAudioContext`, voice bounds and cancellation. The sample Playwright suite uses its own ephemeral loopback servers and an isolated Vite library build in `evidence/audio-revision/`, without touching shared `dist`. It verifies actual MP3 decode/render, nested paths, cached offline reload without autoplay, finite continuous rendering, corrupt/missing asset fallback, and cancellation during held native decodes. The offline cache fixture is not a claim that the full application PWA was rebuilt or deployed. App sound preference/visibility checks remain the application's separate browser tests.
 
 To regenerate the reusable pack:
 

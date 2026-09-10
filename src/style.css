@@ -615,6 +615,42 @@ select {
   border-top: 1px solid var(--pd-line);
   padding-top: var(--sp-1);
 }
+.site-credit {
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--sp-1);
+  padding-top: var(--sp-1);
+  border-top: 1px solid var(--pd-line);
+  color: var(--pd-ivory-muted);
+  font: var(--fs-meta) / var(--lh-body) var(--pd-font-body);
+}
+.credit-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65em;
+  flex-shrink: 0;
+  white-space: nowrap;
+  /* Fit the full credit, not a clipped or scrolling abbreviation. The
+     viewport fallback also keeps a single line without container units. */
+  font-size: min(var(--fs-meta), 1.2vw);
+  font-size: min(var(--fs-meta), 1.38cqi);
+}
+.site-credit a {
+  display: inline-flex;
+  min-width: 24px;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  color: var(--pd-ivory);
+  text-decoration: underline;
+  text-decoration-color: var(--pd-signal);
+  text-underline-offset: 0.2em;
+}
+.site-credit a:hover {
+  color: var(--pd-signal);
+}
 .palette-control {
   display: flex;
   align-items: center;

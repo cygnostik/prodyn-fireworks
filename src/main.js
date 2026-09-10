@@ -63,6 +63,7 @@ const state = {
   ready: false,
   error: null,
   sound: false,
+  soundPreferred: readSoundPreference(),
   gentle: media.matches,
   quality: "auto",
   wind: 2,
@@ -75,6 +76,7 @@ const state = {
 const audio = new FireworksAudio({ volume: 0.6, enabled: false });
 let soundRequest = 0;
 let soundPending = false;
+let pageSuspended = false;
 let engine = null,
   rendererGeneration = 0,
   raf = 0,
@@ -202,7 +204,7 @@ function launch(options = {}, manual = true) {
     const result = engine.launch({
       effectId,
       palette: options.palette || chosenPalette(effectId),
-      position: options.position ?? Math.sin(++seed) * 0.78,
+      position: options.position ?? Math.sin(++seed) * 0.92,
       variation: options.variation,
       scale: options.scale ?? 1,
       loft: options.loft ?? 1,
@@ -318,25 +320,48 @@ function clearSky() {
   updateFinaleControls();
 }
 async function toggleSound() {
-  if (disposed || document.hidden) return;
+  if (disposed || document.hidden || pageSuspended) return;
   if (state.sound || soundPending) {
-    muteForVisibility();
+    muteSound();
     return;
   }
+  rememberSound(true);
+  return startSound(false);
+}
+async function startSound(restoring) {
+  if (disposed || document.hidden || pageSuspended || soundPending) return;
   const request = ++soundRequest;
   soundPending = true;
   renderSound();
   try {
-    const enabled = Boolean(await audio.enable());
-    if (request !== soundRequest || disposed || document.hidden) {
-      if (disposed || document.hidden || (!state.sound && !soundPending))
-        audio.setEnabled(false);
+    // Returning resumes an existing consented context; it cannot grant consent.
+    const enabled = Boolean(
+      await (restoring ? audio.resume() : audio.enable()),
+    );
+    if (
+      request !== soundRequest ||
+      disposed ||
+      document.hidden ||
+      pageSuspended
+    ) {
+      if (disposed || !state.soundPreferred) audio.setEnabled(false);
+      else if (document.hidden || pageSuspended) await audio.suspend();
       return;
     }
     state.sound = enabled;
-    if (!enabled) toast("Sound could not start. Tap Sound again to retry.");
+    if (!enabled)
+      toast(
+        restoring
+          ? "Tap Sound to resume."
+          : "Sound could not start. Tap Sound again to retry.",
+      );
   } catch {
-    if (request === soundRequest && !disposed && !document.hidden) {
+    if (
+      request === soundRequest &&
+      !disposed &&
+      !document.hidden &&
+      !pageSuspended
+    ) {
       state.sound = false;
       toast("Audio is unavailable in this browser.");
     }
@@ -367,13 +392,70 @@ function renderSound() {
       ? "SOUND ON"
       : "SOUND OFF";
 }
-function muteForVisibility() {
+function readSoundPreference() {
+  try {
+    return safeStorage.getItem("afterlight:sound:v1") === "on";
+  } catch {
+    return false;
+  }
+}
+function rememberSound(enabled) {
+  state.soundPreferred = Boolean(enabled);
+  try {
+    safeStorage.setItem("afterlight:sound:v1", enabled ? "on" : "off");
+  } catch {
+    // The same-page preference still works with storage unavailable.
+  }
+}
+function muteSound() {
+  rememberSound(false);
   soundRequest++;
   soundPending = false;
   audio.setEnabled(false);
   audio.stop();
   state.sound = false;
   renderSound();
+}
+function suspendSoundForVisibility() {
+  soundRequest++;
+  soundPending = false;
+  state.sound = false;
+  // Cancel old voices, but keep consent and preference through this pause.
+  void audio.suspend();
+  renderSound();
+}
+function resumeSoundForVisibility() {
+  if (
+    disposed ||
+    document.hidden ||
+    pageSuspended ||
+    soundPending ||
+    !state.soundPreferred
+  )
+    return;
+  const stats = audio.getStats();
+  if (stats.consented && (!state.sound || stats.contextState !== "running"))
+    void startSound(true);
+}
+function restoreRememberedSound(event) {
+  if (!event.isTrusted || event.target.closest?.("#sound-toggle")) return;
+  // Mouse activation arrives on down; touch/pen activation arrives on up.
+  if (
+    (event.type === "pointerdown" && event.pointerType !== "mouse") ||
+    (event.type === "pointerup" && event.pointerType === "mouse")
+  )
+    return;
+  if (
+    event.type === "keydown" &&
+    (event.repeat ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey ||
+      !/^(Enter| |[1-8fp])$/i.test(event.key))
+  )
+    return;
+  if (state.soundPreferred && !state.sound && !soundPending)
+    void startSound(false);
 }
 function rendererFailed(error) {
   state.ready = false;
@@ -677,6 +759,11 @@ on($("sky"), "pointercancel", () => {
   pointerStart = null;
 });
 on($("sound-toggle"), "click", toggleSound);
+// A saved preference does not grant autoplay on a fresh page. Unlock it from
+// the first ordinary interaction, without another Sound-button click.
+on(document, "pointerdown", restoreRememberedSound, { capture: true });
+on(document, "pointerup", restoreRememberedSound, { capture: true });
+on(document, "keydown", restoreRememberedSound, { capture: true });
 on($("pause-toggle"), "click", () => setPaused(!state.paused));
 on($("resume-inline"), "click", () => setPaused(false));
 on($("clear-sky"), "click", clearSky);
@@ -881,23 +968,28 @@ on(window, "resize", resize);
 on(document, "visibilitychange", () => {
   if (document.hidden) {
     cancelAnimationFrame(raf);
-    muteForVisibility();
+    suspendSoundForVisibility();
   } else {
     lastTime = 0;
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
+    resumeSoundForVisibility();
   }
 });
+on(window, "focus", resumeSoundForVisibility);
 on(window, "pagehide", (e) => {
+  pageSuspended = true;
   cancelAnimationFrame(raf);
-  muteForVisibility();
+  suspendSoundForVisibility();
   if (!e.persisted) dispose();
 });
 on(window, "pageshow", (e) => {
   if (e.persisted) {
+    pageSuspended = false;
     lastTime = 0;
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
+    resumeSoundForVisibility();
   }
 });
 const pwa = setupPWA({
@@ -938,7 +1030,10 @@ on($("update-app"), "click", async () => {
 function dispose() {
   if (disposed) return;
   disposed = true;
-  muteForVisibility();
+  soundRequest++;
+  soundPending = false;
+  state.sound = false;
+  audio.setEnabled(false);
   rendererGeneration++;
   cancelAnimationFrame(raf);
   clearTimeout(toastTimer);

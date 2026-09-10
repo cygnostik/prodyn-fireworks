@@ -24,7 +24,7 @@ engine.render();
 
 **Important:** `launch()` returns `{ok:false, reason, effectId}` for unknown IDs, pool pressure, lost context, or disposal. It does not throw for those expected failures. Do not increment the UI's launch counter unless `result.ok` is true. Success includes `id`, `effectId`, `seed`, normalized `position`, `scale`, and `loft`.
 
-- `position`: across the firing ground, clamped to `-1…1`; positive X is audience-right.
+- `position`: horizontal placement in the current visible field, clamped to `-1…1`; positive values are screen-right. The renderer maps this to world X at the current launch depth, leaving a lateral inset for bloom (see below).
 - `scale`: clamped to `0.55…1.6`; `loft`: `0.65…1.35`. Loft affects airborne launch trajectories, not mounted or continuous ground fixtures.
 - Integer seeds use their unsigned 32-bit representation. Omitted seeds use a deterministic per-engine sequence. Repeatability assumes the same quality, launches, settings and update sequence.
 - `update(dt)` advances **simulation only**, in fixed `1/120 s` steps. Non-finite/non-positive deltas are ignored; a call advances at most `0.1 s`. No RAF, timers, DOM input handlers, autoplay, or audio context is owned here.
@@ -106,7 +106,27 @@ Figure shells are intentionally audience-facing, not randomly tumbling out of re
 
 Guatemala uses blue and white across stars, branches, trails and emitters. Smiley always uses a yellow outline, two hollow blue eye circles and a red mouth, independent of the selected palette. Signature cycles per effect; an explicit integer `variation` makes a cue repeatable. Metallic canopy trails have independent colours so coloured tips retain their effect's character.
 
-Accepted launch centres advance from `z=-125` toward `z=15` without wrapping behind an occupied sky. Once the sky is empty, a new sequence starts at the far depth. Clearing also resets the colour counters. The normalized firing half-width is `220` in Audience, `310` in Wide and `150` in Close view. `getStats()` exposes the view, firing width, next depth and a copied `lastLaunch` record. Regression coverage is in [`tests/engine-colour-depth.test.mjs`](../tests/engine-colour-depth.test.mjs) and [`tests/engine-boundaries.test.mjs`](../tests/engine-boundaries.test.mjs).
+Accepted launch centres advance from `z=-125` toward `z=15` without wrapping behind an occupied sky. Once the sky is empty, a new sequence starts at the far depth. Clearing also resets the colour counters. This depth progression and the seeded colour/timing sequence are independent of lateral placement. Regression coverage is in [`tests/engine-colour-depth.test.mjs`](../tests/engine-colour-depth.test.mjs) and [`tests/engine-boundaries.test.mjs`](../tests/engine-boundaries.test.mjs).
+
+### Visible launch field
+
+[`launch-field.js`](../src/engine/launch-field.js) replaces the engine's fixed per-view metre widths with a projection-aware placement at each accepted launch. It inverts the **current** camera projection at that shot's actual Z plane and predicted main-break height. Prediction uses the existing analytic launch integrator without consuming random draws or advancing time. Position zero aims the main break at screen centre; taps and authored cue positions share the same mapping. Mounted effects use their anchor height (the waterfall uses its suspended curtain height).
+
+The nominal field is NDC X `-0.8…0.8`: 80% of the visible width, with 10% inward margin on each side. The initial lift origin and predicted break must both fit this interval, so a pitched camera can pull an edge break slightly inward. Orbit yaw uses projective mapping rather than interpolating world X. Very extreme ultrawide orbits can point an edge ray away from the launch-depth plane; placement then stops within the camera's depth limits instead of selecting a point behind the camera.
+
+The mapping is read at launch, so preset changes, resize and orbit need no cached-width refresh. **Existing shells and particles never teleport to follow the camera.** Camera positions, targets and FOVs are unchanged. The margin protects lateral launch/main-break centres, not every star, satellite or late falling trail: maximum-scale canopies near the edge can still extend beyond the canvas, especially in Close view. Vertical framing and particle spread are intentionally unchanged.
+
+`getStats()` exposes `launchFieldHalfNdc`, the next depth and a copied `lastLaunch` record with `ndc:[x,y,z]` (the original launch origin projected through the current camera). `launchHalfWidth` remains a legacy **direct-simulation fallback**, not a measure of rendered coverage. Calling `FireworkSimulation.launch(options)` directly still uses `position * simulation.launchHalfWidth` (default `220`). Its optional second argument is the renderer's placement callback `(position, shell, airborne) => worldX`; it is invoked only for accepted launches and must not mutate the shell or consume its random generator.
+
+At 1600×900, seed 932, loft 1, far depth, the measured **actual main-break centre span / viewport width** changed as follows:
+
+| View | Edge inputs ±1, before → after | Automatic envelope ±0.78, before → after |
+|---|---:|---:|
+| Audience | 47.71% → 79.06% | 37.22% → 62.40% |
+| Close | 40.09% → 75.28% | 31.27% → 62.40% |
+| Wide | 50.80% → 79.09% | 39.62% → 62.40% |
+
+An application envelope of ±0.92 uses a 73.60% main-break span in these measurements without changing cue cadence. The renderer does not rewrite automatic positions or stored Finale cues. Projection, depth/orbit/resize checks, all-effect non-X invariants are covered by [`tests/launch-field.test.mjs`](../tests/launch-field.test.mjs) and [`tests/launch-field.spec.mjs`](../tests/launch-field.spec.mjs). The browser regression uses an isolated Vite source fixture, not a shared production build.
 
 ## Quality and verification workflow
 

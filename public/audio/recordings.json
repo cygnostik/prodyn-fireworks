@@ -1,0 +1,56 @@
+{
+  "formatVersion": 1,
+  "scope": "Only the three imported MP3s listed here. Not the original synthesized WAV pack.",
+  "license": "UNVERIFIED",
+  "audioRights": "UNVERIFIED",
+  "redistributionClearance": "NOT ESTABLISHED. Inclusion in this release does not grant rights to reuse or redistribute the recordings.",
+  "attribution": {
+    "observedUse": "Pyrolab HD sound-manager source",
+    "sourceScript": "https://pyrolab.org/fireworks-pro/assets/js/script.js?v=3",
+    "creditedEngine": "Caleb Miller \u2014 Firework Simulator v2",
+    "originalPen": "https://codepen.io/MillerTime/pen/XgpNwb",
+    "recordingAuthorship": "Unknown. Engine credit and a software MIT licence do not establish rights to these recordings."
+  },
+  "totalBytes": 85252,
+  "samples": [
+    {
+      "file": "crackle-sm-1.mp3",
+      "sourceURL": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/crackle-sm-1.mp3",
+      "bytes": 42240,
+      "retrievedAt": "2026-09-09T22:56:49.694882+00:00",
+      "originalSampleRate": 48000,
+      "channels": 2,
+      "ffprobeDurationSeconds": 1.471937,
+      "audioRights": "UNVERIFIED",
+      "license": "UNVERIFIED",
+      "recordingAuthor": "UNKNOWN",
+      "modifications": "None; original downloaded MP3 bytes retained."
+    },
+    {
+      "file": "lift1.mp3",
+      "sourceURL": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/lift1.mp3",
+      "bytes": 8500,
+      "retrievedAt": "2026-09-09T22:56:50.137868+00:00",
+      "originalSampleRate": 44100,
+      "channels": 2,
+      "ffprobeDurationSeconds": 0.459365,
+      "audioRights": "UNVERIFIED",
+      "license": "UNVERIFIED",
+      "recordingAuthor": "UNKNOWN",
+      "modifications": "None; original downloaded MP3 bytes retained."
+    },
+    {
+      "file": "burst1.mp3",
+      "sourceURL": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/burst1.mp3",
+      "bytes": 34512,
+      "retrievedAt": "2026-09-09T22:56:50.451285+00:00",
+      "originalSampleRate": 48000,
+      "channels": 2,
+      "ffprobeDurationSeconds": 1.409188,
+      "audioRights": "UNVERIFIED",
+      "license": "UNVERIFIED",
+      "recordingAuthor": "UNKNOWN",
+      "modifications": "None; original downloaded MP3 bytes retained."
+    }
+  ]
+}

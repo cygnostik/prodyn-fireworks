@@ -97,6 +97,8 @@ export function signatureForEvent(event) {
       ? "salute"
       : "burst";
   }
+  if (event.kind === "comet" && event.effectId === "roman-candle")
+    return "launch";
   return event.kind;
 }
 

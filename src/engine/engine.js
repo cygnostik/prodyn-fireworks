@@ -6,6 +6,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { FireworkSimulation, EFFECT_IDS, clamp } from "./simulation.js";
 import { createEnvironment } from "./environment.js";
 import { ParticleRenderer } from "./particles.js";
+import { launchFieldX, LAUNCH_FIELD_HALF_NDC } from "./launch-field.js";
 
 const QUALITY = Object.freeze({
   low: { density: 0.52, dpr: 1.25, reflection: 640, samples: 0 },
@@ -17,19 +18,16 @@ const VIEWS = Object.freeze({
     position: [0, 90, 455],
     target: [0, 112, -55],
     fov: 48,
-    launchHalfWidth: 220,
   },
   close: {
     position: [12, 89, 342],
     target: [0, 160, -55],
     fov: 48,
-    launchHalfWidth: 150,
   },
   wide: {
     position: [35, 95, 680],
     target: [0, 138, -55],
     fov: 46,
-    launchHalfWidth: 310,
   },
 });
 
@@ -175,7 +173,15 @@ export class AfterlightEngine {
         reason: this.disposed ? "disposed" : "context-lost",
         effectId: options.effectId,
       };
-    return this.simulation.launch(options);
+    return this.simulation.launch(options, (position, shell, airborne) =>
+      launchFieldX(
+        this.camera,
+        position,
+        shell,
+        airborne,
+        this.simulation.wind,
+      ),
+    );
   }
   update(dtSeconds) {
     if (!this.disposed && !this.contextLost) this.simulation.update(dtSeconds);
@@ -265,7 +271,6 @@ export class AfterlightEngine {
     if (this.disposed || !VIEWS[view]) return false;
     this.view = view;
     const preset = VIEWS[view];
-    this.simulation.launchHalfWidth = preset.launchHalfWidth;
     this.camera.position.fromArray(preset.position);
     this.target.fromArray(preset.target);
     this.camera.fov = preset.fov;
@@ -294,6 +299,7 @@ export class AfterlightEngine {
     if (this.disposed) return;
     this.simulation.reset();
     this.frame = 0;
+    this.environment.reset();
     this.environment.update(0, this.options.reducedMotion);
     this.particles.sync();
   }
@@ -314,11 +320,20 @@ export class AfterlightEngine {
       drawCalls: info?.render.calls || 0,
       quality: this.quality,
       view: this.view,
+      launchFieldHalfNdc: LAUNCH_FIELD_HALF_NDC,
+      // Legacy direct-simulation fallback, not the camera-aware firing width.
       launchHalfWidth: s?.launchHalfWidth || 0,
       launchDepth: s?.launchDepth ?? -125,
       lastLaunch: s?.lastLaunch
         ? {
             ...s.lastLaunch,
+            ndc: new THREE.Vector3(
+              s.lastLaunch.x,
+              s.lastLaunch.y,
+              s.lastLaunch.z,
+            )
+              .project(this.camera)
+              .toArray(),
             colors: s.lastLaunch.colors.map((c) => [...c]),
             trailColor: s.lastLaunch.trailColor
               ? [...s.lastLaunch.trailColor]
@@ -338,6 +353,7 @@ export class AfterlightEngine {
       bursts: s?.metrics.bursts || 0,
       droppedParticles: s?.metrics.droppedParticles || 0,
       reflections: this.options.reflections,
+      meteors: this.environment?.getMeteorStats() || null,
       reducedMotion: this.options.reducedMotion,
       contextLost: this.contextLost,
       disposed: this.disposed,
